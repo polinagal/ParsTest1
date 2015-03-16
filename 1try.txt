@@ -1,0 +1,3 @@
+OR(a,b,c)
+FALSE(z)
+TRUE(x,y,z)
