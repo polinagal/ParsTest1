@@ -1,3 +1,1 @@
-OR(a,b,c)
-FALSE(z)
-TRUE(x,y,z)
+OR(a,b,c) :- FALSE(z), EQUALS(x,y)
