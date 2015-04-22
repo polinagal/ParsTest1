@@ -1,6 +1,8 @@
 package s2a.inference.mgp;
 
+import java.io.IOException;
 import org.junit.*;
+import parserthing.*;
 import s2a.inference.api.AbstractTheoryFactory;
 import s2a.inference.api.Logician;
 import s2a.inference.api.Theory;
@@ -17,20 +19,22 @@ import s2a.util.config.DepsConfigManager;
  * Date: 09.01.13
  * Time: 18:39
  */
-public class PrologLogicianTest {
+public class PrologLogicianTest_EXT {
 
-    private static final LogicianFactory factory = LogicianFactory.instance;
+    private static final LogicianFactory logFactory = LogicianFactory.instance;
 
     private static final AbstractPredicateFactory predFactory = AbstractPredicateFactory.getInstance();
+    
+    private static Parser parser = null;
 
     private final AbstractTheoryFactory thFactory = AbstractTheoryFactory.getInstance();
 
-    final VariableObject x = predFactory.createVariableObject(4, "x");
-    final VariableObject y = predFactory.createVariableObject(4, "y");
-    final VariableObject z = predFactory.createVariableObject(4, "z");
-    final VariableObject w = predFactory.createVariableObject(4, "w");
-    final VariableObject s = predFactory.createVariableObject(4, "s");
-    final VariableObject p = predFactory.createVariableObject(4, "p");
+//    final VariableObject x = predFactory.createVariableObject(4, "x");
+//    final VariableObject y = predFactory.createVariableObject(4, "y");
+//    final VariableObject z = predFactory.createVariableObject(4, "z");
+//    final VariableObject w = predFactory.createVariableObject(4, "w");
+//    final VariableObject s = predFactory.createVariableObject(4, "s");
+//    final VariableObject p = predFactory.createVariableObject(4, "p");
 
     final VariableObject arr[] = new VariableObject[20]; {
         for (int i=0; i<20; i++)
@@ -49,20 +53,25 @@ public class PrologLogicianTest {
 
 
     @Test
-    public void testVerySimple() throws PredicateCreateException {
-        final Theory theory = thFactory.createTheory();
-        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-        final Logician logician = factory.createLogician();
-        Predicate target = predFactory.createPredicate(PredicateType.LESS, x, y);
+    public void testVerySimple() throws PredicateCreateException, IOException {
+        parser = new Parser("testVerySimple.txt");
+        parser.parseFile();
+        //ok
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
         Assert.assertTrue(logician.proveTrue(theory,
                 target));
     }
-
+//
 //    @Test
 //    public void testNegateVerySimple() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-//        final Logician logician = factory.createLogician();
+//        final Logician logician = logFactory.createLogician();
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, y, x)));
 //    }
@@ -71,8 +80,8 @@ public class PrologLogicianTest {
 //    public void testLessToLessEquals() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.lessToLessEqualsRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.lessToLessEqualsRule());
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS, x, y)));
 //    }
@@ -82,8 +91,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
 //                predFactory.createIntegerConstantObject(0, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.ZERO, x)));
 //    }
@@ -93,8 +102,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
 //                predFactory.createIntegerConstantObject(1, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.ZERO, x)));
 //    }
@@ -104,8 +113,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NOT_EQUALS, x,
 //                predFactory.createIntegerConstantObject(0, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NONZERO, x)));
 //    }
@@ -114,8 +123,8 @@ public class PrologLogicianTest {
 //    public void testNonZeroNegate() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NONZERO, x));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x,
 //                        predFactory.createIntegerConstantObject(1, 1))));
@@ -126,8 +135,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
 //                predFactory.createIntegerConstantObject(3, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NONZERO, x)));
 //    }
@@ -139,8 +148,8 @@ public class PrologLogicianTest {
 //                x, predFactory.createIntegerConstantObject(-3, 1)));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NOT,
 //                x, y));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.ZERO, y)));
 //    }
@@ -150,8 +159,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.OR, x, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, x));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.ZERO, y)));
 //        Assert.assertTrue(logician.proveTrue(theory,
@@ -165,8 +174,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.OR,
 //                x, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NONZERO, x));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addZeroNonzeroRules(logician);
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NONZERO, y)));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, y));
@@ -180,8 +189,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.AND, x, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                x, predFactory.createIntegerConstantObject(2, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NONZERO, y)));
 //        Assert.assertTrue(logician.proveTrue(theory,
@@ -193,8 +202,8 @@ public class PrologLogicianTest {
 //    public void testCommutativity() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, y, x)));
 //    }
@@ -203,8 +212,8 @@ public class PrologLogicianTest {
 //    public void testCommutativityNegate() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, y, z)));
 //    }
@@ -214,8 +223,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x, z)));
 //    }
@@ -225,8 +234,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, w));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x, z)));
 //    }
@@ -237,8 +246,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, w));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x, z)));
 //    }
@@ -249,8 +258,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, z, w));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x, w)));
 //    }
@@ -260,8 +269,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, w));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, w, x)));
 //    }
@@ -271,8 +280,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS,
 //                x, predFactory.createIntegerConstantObject(3, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS,
 //                        x, predFactory.createIntegerConstantObject(5, 1))));
@@ -284,8 +293,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS,
 //                y, predFactory.createIntegerConstantObject(3, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS,
 //                        x, predFactory.createIntegerConstantObject(5, 1))));
@@ -296,8 +305,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // x<z <== x<y (!), y<=z <== <= y=z
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, x, z)));
@@ -308,8 +317,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS_EQUALS, z, w));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // y<=w <== y<=z, z<=w (!) <= y=z
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS, y, w)));
@@ -321,8 +330,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS_EQUALS, z, w));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // x<w <== x<y (!), y<=w <== y<=z, z<=w (!) <= y=z
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, x, w)));
@@ -333,8 +342,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // I should think more about numbers here
 //        // y<=7 <== y<=EX, (EX<=7)
 //        // y<=EX <= y=EX
@@ -349,8 +358,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // I should think more about numbers here
 //        // y<=7 <== y<=EX, (EX<=7)
 //        // y<=EX <= y=EX
@@ -366,8 +375,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // I should think more about numbers here
 //        // x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
 //        Assert.assertTrue(logician.proveTrue(theory,
@@ -381,8 +390,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        // I should think more about numbers here
 //        // x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
 //        Assert.assertFalse(logician.proveTrue(theory,
@@ -397,8 +406,8 @@ public class PrologLogicianTest {
 //                x, predFactory.createIntegerConstantObject(4, 1)));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.GREATER,
 //                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, x, y)));
 //    }
@@ -409,8 +418,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS_EQUALS, y, x));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS,
 //                x, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NOT_EQUALS,
 //                        y, predFactory.createIntegerConstantObject(4, 1))));
@@ -421,8 +430,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NEG, y, x));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.NEG, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addArithmeticRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addArithmeticRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x, z)));
 //    }
@@ -432,8 +441,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF,
 //                y, x, predFactory.createIntegerConstantObject(-5, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addArithmeticRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addArithmeticRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.SUM,
 //                        y, x, predFactory.createIntegerConstantObject(5, 1))));
@@ -447,8 +456,8 @@ public class PrologLogicianTest {
 //                y, predFactory.createIntegerConstantObject(2, 1));
 //        theory.addPredicate(p);
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUIV, p, q));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.modusPonensRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.modusPonensRule());
 //        Assert.assertTrue(logician.proveTrue(theory, q));
 //    }
 //
@@ -460,8 +469,8 @@ public class PrologLogicianTest {
 //                y, predFactory.createIntegerConstantObject(2, 1));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.OPPOS, p));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUIV, p, q));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.modusPonensRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.modusPonensRule());
 //        Assert.assertFalse(logician.proveTrue(theory, q));
 //    }
 //
@@ -474,8 +483,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(p);
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUIV,
 //                predFactory.createPredicate(PredicateType.NONZERO, x), q));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.modusPonensReverseRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.modusPonensReverseRule());
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS,
 //                        y, predFactory.createIntegerConstantObject(2, 1))));
@@ -490,8 +499,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(p);
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUIV,
 //                p, q));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.modusPonensReverseRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.modusPonensReverseRule());
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS,
 //                        y, predFactory.createIntegerConstantObject(2, 1))));
@@ -506,8 +515,8 @@ public class PrologLogicianTest {
 //                y, predFactory.createIntegerConstantObject(2, 1));
 //        theory.addPredicate(p1);
 //        theory.addPredicate(p2);
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS,
 //                        x, predFactory.createIntegerConstantObject(2, 1))));
@@ -525,8 +534,8 @@ public class PrologLogicianTest {
 //                x, predFactory.createIntegerConstantObject(2, 1));
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.ONEOF,
 //                p1, p2));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS_EQUALS,
 //                        x, predFactory.createIntegerConstantObject(2, 1))));
@@ -538,8 +547,8 @@ public class PrologLogicianTest {
 //        for (int i=0; i<18; i++)
 //            theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                    arr[i], arr[i+1]));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        final int prevDeep = DepsConfigManager.getInstance().getTheoryDeep();
 //        try {
 //            DepsConfigManager.getInstance().setTheoryDeep(20);
@@ -556,8 +565,8 @@ public class PrologLogicianTest {
 //        for (int i=0; i<19; i++)
 //            theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
 //                    arr[i], arr[i+1]));
-//        final Logician logician = factory.createLogician();
-//        factory.addComparisonRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addComparisonRules(logician);
 //        final int prevDeep = DepsConfigManager.getInstance().getTheoryDeep();
 //        try {
 //            // 20 is the least needed depth
@@ -577,8 +586,8 @@ public class PrologLogicianTest {
 //                predFactory.createIntegerConstantObject(0, 1)));
 //        // z = *y
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.DEREFFROM, z, y));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, z, x)));
 //    }
@@ -611,8 +620,8 @@ public class PrologLogicianTest {
 //                        y, arr[0],
 //                predFactory.createPredicate(PredicateType.EQUALS,
 //                        y, arr[1]))));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.NONZERO, y)));
 //    }
@@ -626,8 +635,8 @@ public class PrologLogicianTest {
 //        // y<2
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS,
 //                y, predFactory.createIntegerConstantObject(2, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        // x<8 ?
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS,
@@ -639,8 +648,8 @@ public class PrologLogicianTest {
 //        final Theory theory = thFactory.createTheory();
 //        // x=y-y
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF, x, y, y));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.diffSameIsZeroRule());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.diffSameIsZeroRule());
 //        //factory.addAllRules(logician);
 //        // x=0 ?
 //        Assert.assertTrue(logician.proveTrue(theory,
@@ -654,9 +663,9 @@ public class PrologLogicianTest {
 //        // x=0
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
 //                predFactory.createIntegerConstantObject(0, 1)));
-//        final Logician logician = factory.createLogician();
-//        logician.addRule(factory.equalsToLessEqualsRule());
-//        logician.addRule(factory.lessTransitivityRule02());
+//        final Logician logician = logFactory.createLogician();
+//        logician.addRule(logFactory.equalsToLessEqualsRule());
+//        logician.addRule(logFactory.lessTransitivityRule02());
 //        //factory.addAllRules(logician);
 //        // x<1 ?
 //        Assert.assertTrue(logician.proveTrue(theory,
@@ -671,8 +680,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF, x, y, z));
 //        // y=z
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        // We should go here through intermediate x=0,
 //        // and probably logician cannot understand it
 //        // x<=1 ? YES!
@@ -696,8 +705,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.ONEOF,
 //                predFactory.createPredicate(PredicateType.EQUALS, y, arr[0]),
 //                predFactory.createPredicate(PredicateType.EQUALS, y, arr[1])));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        // x=0 ? YES!
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.EQUALS, x,
@@ -718,8 +727,8 @@ public class PrologLogicianTest {
 //                predFactory.createIntegerConstantObject(4, 1)));
 //        // y=z
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, w, 
 //                        predFactory.createIntegerConstantObject(4, 1))));
@@ -740,8 +749,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.ONEOF,
 //                predFactory.createPredicate(PredicateType.EQUALS, y, arr[0]),
 //                predFactory.createPredicate(PredicateType.EQUALS, y, arr[1])));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        // w<4?
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS, w,
@@ -767,8 +776,8 @@ public class PrologLogicianTest {
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.PTR, s, p, x));
 //        // y=z
 //        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, y, z));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
+//        final Logician logician = logFactory.createLogician();
+//        logFactory.addAllRules(logician);
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.CORRECT_PTR, p)));
 //    }
