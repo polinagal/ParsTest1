@@ -1,0 +1,1 @@
+GREATER_EQUALS(v,u) :- LESS_EQUALS(u,v)

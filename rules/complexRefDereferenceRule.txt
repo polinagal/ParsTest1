@@ -1,0 +1,1 @@
+EQUALS(u,v) :- PTR(x,v,s), DEREFFROM(w,v), ARRAYSET(x,s,u)

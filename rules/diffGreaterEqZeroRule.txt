@@ -1,0 +1,1 @@
+GREATER_EQUALS(a,0) :- DIFF(a,b,c), GREATER_EQUALS(b,c)

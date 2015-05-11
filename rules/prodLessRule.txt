@@ -1,0 +1,1 @@
+LESS(a,s) :- PROD(a,b,c), PROD(s,c,_d), LESS(b,_d)

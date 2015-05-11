@@ -1,0 +1,1 @@
+EQUALS(a, 0) :- DIFF(a,b,c), EQUALS(b,c)

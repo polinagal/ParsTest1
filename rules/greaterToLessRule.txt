@@ -1,0 +1,1 @@
+LESS(v,u) :- GREATER(u,v)

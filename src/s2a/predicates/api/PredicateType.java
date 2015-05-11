@@ -468,7 +468,7 @@ public enum PredicateType {
         protected void checkArgumentTypes(final List<PredicateObject> args)
                 throws PredicateCreateException {
             //checkComplex(args);
-            if (args.get(1) instanceof ConstantObject)
+            if (args.get(1) instanceof ConstantObject) 
                 throw new PredicateCreateException(
                         "1-й аргумент предиката не может быть константой: " +
                         this.toString() + ": " + args);

@@ -1,14 +1,20 @@
 package s2a.inference.mgp;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.*;
 import parserthing.*;
+import s2a.inference.api.AbstractQuantifierFactory;
 import s2a.inference.api.AbstractTheoryFactory;
+import s2a.inference.api.InferenceRule;
 import s2a.inference.api.Logician;
+import s2a.inference.api.QuantifierValue;
 import s2a.inference.api.Theory;
 import s2a.predicates.api.AbstractPredicateFactory;
 import s2a.predicates.api.Predicate;
 import s2a.predicates.api.PredicateCreateException;
+import s2a.predicates.api.PredicateObject;
 import s2a.predicates.api.PredicateType;
 import s2a.predicates.api.VariableObject;
 import s2a.util.config.DepsConfigManager;
@@ -21,6 +27,8 @@ import s2a.util.config.DepsConfigManager;
  */
 public class PrologLogicianTest_EXT {
 
+    static private final AbstractQuantifierFactory quantifierFactory =
+            AbstractQuantifierFactory.getInstance();
     private static final LogicianFactory logFactory = LogicianFactory.instance;
 
     private static final AbstractPredicateFactory predFactory = AbstractPredicateFactory.getInstance();
@@ -28,18 +36,6 @@ public class PrologLogicianTest_EXT {
     private static Parser parser = null;
 
     private final AbstractTheoryFactory thFactory = AbstractTheoryFactory.getInstance();
-
-//    final VariableObject x = predFactory.createVariableObject(4, "x");
-//    final VariableObject y = predFactory.createVariableObject(4, "y");
-//    final VariableObject z = predFactory.createVariableObject(4, "z");
-//    final VariableObject w = predFactory.createVariableObject(4, "w");
-//    final VariableObject s = predFactory.createVariableObject(4, "s");
-//    final VariableObject p = predFactory.createVariableObject(4, "p");
-
-    final VariableObject arr[] = new VariableObject[20]; {
-        for (int i=0; i<20; i++)
-            arr[i] = predFactory.createVariableObject(4, "abcdefghijklmnopqrst".substring(i,i+1));
-    }
 
     @BeforeClass
     static public void setUp() {
@@ -54,7 +50,7 @@ public class PrologLogicianTest_EXT {
 
     @Test
     public void testVerySimple() throws PredicateCreateException, IOException {
-        parser = new Parser("testVerySimple.txt");
+        parser = new Parser("test_inp/testVerySimple.txt");
         parser.parseFile();
         //ok
         final Logician logician = parser.getLogician();
@@ -66,123 +62,266 @@ public class PrologLogicianTest_EXT {
         Assert.assertTrue(logician.proveTrue(theory,
                 target));
     }
-//
-//    @Test
-//    public void testNegateVerySimple() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-//        final Logician logician = logFactory.createLogician();
-//        Assert.assertFalse(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS, y, x)));
-//    }
-//
-//    @Test
-//    public void testLessToLessEquals() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-//        final Logician logician = logFactory.createLogician();
-//        logician.addRule(logFactory.lessToLessEqualsRule());
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS_EQUALS, x, y)));
-//    }
-//
-//    @Test
-//    public void testZeroDefinition() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
-//                predFactory.createIntegerConstantObject(0, 1)));
-//        final Logician logician = logFactory.createLogician();
+
+    @Test
+    public void testNegateVerySimple() throws PredicateCreateException, IOException {
+        
+        parser = new Parser("test_inp/testNegativeVerySimple.txt");
+        parser.parseFile();
+        //ok
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        Assert.assertFalse(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testLessToLessEquals() throws PredicateCreateException, IOException {
+        
+        parser = new Parser("test_inp/testLessToLessEquals.txt");
+        parser.parseFile();
+        parser.addRules("Comparison");
+        
+        //ok
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+    }
+    
+   
+
+    @Test
+    public void testZeroDefinition() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testZeroDefinition.txt");
+        parser.parseFile();
+        parser.addRules("ZeroNonzero");
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+               
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+        
+        
+    }
+
+    @Test
+    public void testZeroNegate() throws PredicateCreateException, IOException {
+        
+        parser = new Parser("test_inp/testZeroNegate.txt");
+        parser.parseFile();
+        parser.addRules("ZeroNonzero");
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        Assert.assertFalse(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testNonZeroDefinition() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testNonZeroDefinition.txt");
+        parser.parseFile();
+        parser.addRules("ZeroNonzero");
+        
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testNonZeroNegate() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testNonZeroNegate.txt");
+        parser.parseFile();
+        parser.addRules("ZeroNonzero");
+        
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        Assert.assertFalse(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testNonZeroChain() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testNonZeroChain.txt");
+        parser.parseFile();
+        
+//        parser.addAllRules();
+        parser.addRules("Arithmetic");
+        parser.addRules("Comparison");
+        parser.addRules("Pointer");
+        parser.addRules("ZeroNonzero");
+
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        logFactory.addComparisonRules(logician);
+        logFactory.addZeroNonzeroRules(logician);
+        logFactory.addArithmeticRules(logician);
+        logFactory.addPointerRules(logician);
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testNotNonZero() throws PredicateCreateException, IOException {
+        
+        parser = new Parser("test_inp/testNotNonZero.txt");
+        parser.parseFile();
+        parser.addAllRules();
+        
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        
+                
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+    }
+
+    @Test
+    public void testOrFalse1() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testOrFalse1.txt");
+        parser.parseFile();
+        
+        parser.addRules("ZeroNonzero");
+        
+                
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                 target));
+    }
+    
+    @Test
+    public void testOrFalse2() throws PredicateCreateException, IOException {
+        parser = new Parser("test_inp/testOrFalse2.txt");
+        parser.parseFile();
+        parser.addRules("ZeroNonzero");
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
 //        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.ZERO, x)));
-//    }
-//
-//    @Test
-//    public void testZeroNegate() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
-//                predFactory.createIntegerConstantObject(1, 1)));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertFalse(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.ZERO, x)));
-//    }
-//
-//    @Test
-//    public void testNonZeroDefinition() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.NOT_EQUALS, x,
-//                predFactory.createIntegerConstantObject(0, 1)));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.NONZERO, x)));
-//    }
-//
-//    @Test
-//    public void testNonZeroNegate() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.NONZERO, x));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertFalse(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.EQUALS, x,
-//                        predFactory.createIntegerConstantObject(1, 1))));
-//    }
-//
-//    @Test
-//    public void testNonZeroChain() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, x,
-//                predFactory.createIntegerConstantObject(3, 1)));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addAllRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.NONZERO, x)));
-//    }
-//
-//    @Test
-//    public void testNotNonZero() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
-//                x, predFactory.createIntegerConstantObject(-3, 1)));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.NOT,
-//                x, y));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addAllRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.ZERO, y)));
-//    }
-//
-//    @Test
-//    public void testOrFalse() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.OR, x, y, z));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, x));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.ZERO, y)));
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.EQUALS, z,
-//                        predFactory.createIntegerConstantObject(0, 1))));
-//    }
-//
-//    @Test
-//    public void testOrTrue() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.OR,
-//                x, y, z));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.NONZERO, x));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addZeroNonzeroRules(logician);
-//        Assert.assertFalse(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.NONZERO, y)));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, y));
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.NONZERO, z)));
-//    }
-//
+
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+    }
+    
+    @Test 
+    public void testMixNMatch ()
+    {
+        ArrayList<PredicateObject> local = new ArrayList<>();
+        ArrayList<PredicateObject> global = new ArrayList<>();
+        
+        local.add(predFactory.createIntegerConstantObject(15, 1));
+        local.add(predFactory.createStringConstantObject("sco"));        
+        local.add(predFactory.createVariableObject(4, "vo"));       
+        local.add(quantifierFactory.createQuantifierValue(1, "d"));
+        local.add(quantifierFactory.createQuantifierSimpleConstant(2, "e"));
+        local.add(quantifierFactory.createQuantifierNonconstValue(3, "f"));
+        System.out.println("***before");
+        for (PredicateObject po: local)
+            System.out.println(po.toString());
+        
+        
+        global.add(quantifierFactory.createQuantifierValue(1, "d"));
+        global.add(predFactory.createVariableObject(4, "e"));
+        global.add(predFactory.createIntegerConstantObject(15, 1));
+        
+        
+        Parser p = new Parser("test_inp/testOrFalse1.txt");
+        List<PredicateObject> poo =  p.mixNMatch(global, local);
+        System.out.println("***after:");
+        for (PredicateObject po: poo)
+            System.out.println(po.toString());
+        
+        System.out.println("");
+        
+        
+        
+
+    }
+
+    @Test
+    public void testOrTrue1() throws PredicateCreateException, IOException {
+         parser = new Parser("test_inp/testOrTrue1.txt");
+        parser.parseFile();
+        
+        parser.addRules("ZeroNonzero");
+                        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+                
+        Assert.assertTrue(logician.proveTrue(theory,
+                 target));
+    }
+
+    @Test
+    public void testOrTrue2() throws PredicateCreateException, IOException {
+         parser = new Parser("test_inp/testOrTrue2.txt");
+        parser.parseFile();
+        
+        parser.addRules("ZeroNonzero");
+                        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+                
+        Assert.assertTrue(logician.proveTrue(theory,
+                 target));
+    }
 //    @Test
 //    public void testAndTrue() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
@@ -369,21 +508,24 @@ public class PrologLogicianTest_EXT {
 //                        y, predFactory.createIntegerConstantObject(2, 1))));
 //    }
 //
-//    @Test
-//    public void testNumberChainComparisons() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS,
-//                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addComparisonRules(logician);
-//        // I should think more about numbers here
-//        // x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS,
-//                        x, predFactory.createIntegerConstantObject(7, 1))));
-//    }
-//
+    @Test
+    public void testNumberChainComparisons() throws PredicateCreateException, IOException {
+        
+        parser = new Parser("test_inp/testNumberChainComparisons.txt");
+        parser.parseFile();
+        parser.addRules("Comparison");
+        
+        final Logician logician = parser.getLogician();
+        
+        final Theory theory = parser.getTheory();
+        
+        final Predicate target = parser.getTarget();
+        
+        Assert.assertTrue(logician.proveTrue(theory,
+                target));
+        
+    }
+
 //    @Test
 //    public void testNumberChainComparisonsNegate() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();
@@ -392,24 +534,27 @@ public class PrologLogicianTest_EXT {
 //                y, predFactory.createIntegerConstantObject(4, 1)));
 //        final Logician logician = logFactory.createLogician();
 //        logFactory.addComparisonRules(logician);
-//        // I should think more about numbers here
-//        // x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
+//         I should think more about numbers here
+//         x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
 //        Assert.assertFalse(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.LESS,
 //                        x, predFactory.createIntegerConstantObject(1, 1))));
 //    }
 //
 //    @Test
-//    public void testLessAndGreater() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS,
-//                x, predFactory.createIntegerConstantObject(4, 1)));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.GREATER,
-//                y, predFactory.createIntegerConstantObject(4, 1)));
-//        final Logician logician = logFactory.createLogician();
-//        logFactory.addComparisonRules(logician);
+//    public void testLessAndGreater() throws PredicateCreateException, IOException {
+//        parser = new Parser("test_inp/testLessAndGreater.txt");
+//        parser.parseFile();
+//        parser.addRules("Comparison");
+//        
+//        final Logician logician = parser.getLogician();
+//        
+//        final Theory theory = parser.getTheory();
+//        
+//        final Predicate target = parser.getTarget();
+//        
 //        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS, x, y)));
+//                target));
 //    }
 //
 //    @Test

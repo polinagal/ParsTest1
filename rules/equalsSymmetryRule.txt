@@ -1,0 +1,1 @@
+EQUALS(u,v) :- EQUALS(v,u)

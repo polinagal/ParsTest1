@@ -1,0 +1,1 @@
+ZERO(b) :- OR(a,b,c), ZERO(a)

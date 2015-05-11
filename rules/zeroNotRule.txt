@@ -1,0 +1,1 @@
+ZERO(b) :- NOT(a,b), NONZERO(a)

@@ -1,0 +1,1 @@
+SUM(a,b,d) :- DIFF(a,b,c), NEG(c,d)

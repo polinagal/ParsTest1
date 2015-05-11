@@ -1,0 +1,1 @@
+EQUALS(a,b) :- SUM(a,b,c), ZERO(c)

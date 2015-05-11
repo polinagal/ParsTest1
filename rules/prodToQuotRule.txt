@@ -1,0 +1,1 @@
+QUOT(b,a,c) :- PROD(a,b,c)

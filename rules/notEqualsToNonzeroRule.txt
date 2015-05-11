@@ -1,0 +1,1 @@
+NONZERO(a):-NOT_EQUALS(a,0)

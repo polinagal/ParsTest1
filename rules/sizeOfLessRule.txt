@@ -1,0 +1,1 @@
+SIZEOF_LESS(u, w) :- SIZEOF(u, v), LESS(v, w)

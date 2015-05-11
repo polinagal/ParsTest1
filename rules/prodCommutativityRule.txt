@@ -1,0 +1,1 @@
+PROD (a,b,c) :- PROD (a,c,b)

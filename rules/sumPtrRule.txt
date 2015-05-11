@@ -1,0 +1,1 @@
+PTR (u, v, m) :- SUM (v, w, t), PTR(u, w, n), SUM (m, n, t)

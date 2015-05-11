@@ -48,15 +48,15 @@ public class PrologLogicianTest {
     }
 
 
-    @Test
-    public void testVerySimple() throws PredicateCreateException {
-        final Theory theory = thFactory.createTheory();
-        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
-        final Logician logician = factory.createLogician();
-        Predicate target = predFactory.createPredicate(PredicateType.LESS, x, y);
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
-    }
+//    @Test
+//    public void testVerySimple() throws PredicateCreateException {
+//        final Theory theory = thFactory.createTheory();
+//        theory.addPredicate(predFactory.createPredicate(PredicateType.LESS, x, y));
+//        final Logician logician = factory.createLogician();
+//        Predicate target = predFactory.createPredicate(PredicateType.LESS, x, y);
+//        Assert.assertTrue(logician.proveTrue(theory,
+//                target));
+//    }
 
 //    @Test
 //    public void testNegateVerySimple() throws PredicateCreateException {
@@ -144,21 +144,21 @@ public class PrologLogicianTest {
 //        Assert.assertTrue(logician.proveTrue(theory,
 //                predFactory.createPredicate(PredicateType.ZERO, y)));
 //    }
-//
-//    @Test
-//    public void testOrFalse() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.OR, x, y, z));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, x));
-//        final Logician logician = factory.createLogician();
-//        factory.addZeroNonzeroRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.ZERO, y)));
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.EQUALS, z,
-//                        predFactory.createIntegerConstantObject(0, 1))));
-//    }
-//
+
+    @Test
+    public void testOrFalse() throws PredicateCreateException {
+        final Theory theory = thFactory.createTheory();
+        theory.addPredicate(predFactory.createPredicate(PredicateType.OR, x, y, z));
+        theory.addPredicate(predFactory.createPredicate(PredicateType.ZERO, x));
+        final Logician logician = factory.createLogician();
+        factory.addZeroNonzeroRules(logician);
+        Assert.assertTrue(logician.proveTrue(theory,
+                predFactory.createPredicate(PredicateType.ZERO, y)));
+        Assert.assertTrue(logician.proveTrue(theory,
+                predFactory.createPredicate(PredicateType.EQUALS, z,
+                        predFactory.createIntegerConstantObject(0, 1))));
+    }
+
 //    @Test
 //    public void testOrTrue() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();

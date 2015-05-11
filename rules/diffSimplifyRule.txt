@@ -1,0 +1,1 @@
+EQUALS(a,d) :-  DIFF(a,b,c), SUM(b,c,d)

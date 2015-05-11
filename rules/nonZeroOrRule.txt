@@ -1,0 +1,1 @@
+NONZERO(b) :- OR(a, b, c), NONZERO(a), ZERO(c) 

@@ -1,0 +1,1 @@
+LESS_EQUALS(x,y) :- LESS (x,y)

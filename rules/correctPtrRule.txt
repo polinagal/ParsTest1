@@ -1,0 +1,1 @@
+CORRECT(v) :- PTR(u,v,w), GREATER_EQUALS(w,0),  SIZEOF(u,s), LESS(w,s)

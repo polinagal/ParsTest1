@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import s2a.inference.api.AbstractQuantifierFactory;
 import s2a.inference.api.AbstractTheoryFactory;
 import s2a.inference.api.InferenceRule;
 import s2a.inference.api.Logician;
@@ -19,21 +20,32 @@ import s2a.predicates.api.PredicateType;
 
 
 public  class Parser {
+    
     private final String filename;
     
-    private  final LogicianFactory logFactory = LogicianFactory.instance;
+    private  final LogicianFactory logFactory = 
+            LogicianFactory.instance;
 
-    private  final AbstractPredicateFactory predFactory = AbstractPredicateFactory.getInstance();
+    private  final AbstractPredicateFactory predFactory = 
+            AbstractPredicateFactory.getInstance();
 
-    private  final AbstractTheoryFactory thFactory = AbstractTheoryFactory.getInstance();
+    private  final AbstractTheoryFactory thFactory = 
+            AbstractTheoryFactory.getInstance();
     
-    private   final Theory theory = thFactory.createTheory();
+    static private final AbstractQuantifierFactory quantifierFactory = 
+            AbstractQuantifierFactory.getInstance();
     
-    private final Logician logician = logFactory.createLogician();
+    private   final Theory theory = 
+            thFactory.createTheory();
     
-    private  Predicate target = null;
+    private final Logician logician = 
+            logFactory.createLogician();
+    
+    private  Predicate target = 
+            null;
     
     private List<PredicateObject> args = new ArrayList<>();
+    
 
     public Parser(String filename) {
         
@@ -50,15 +62,10 @@ public  class Parser {
      * @param filename - имя просматриваемого файла
      * @throws IOException 
      */
+       
     public  void parseFile () throws IOException {
-        
-//        args.add(predFactory.createVariableObject(4, "x"));
-//        args.add(predFactory.createVariableObject(4, "y"));
-//        for (PredicateObject po : args) {
-//            System.out.println(po.getUniqueName());
-//        }
-        
-        String regexFact = "[A-Z]*\\([a-z|A-Z]+(,[a-z|A-Z]+)*\\)";       //^ - the beginning and $ - the end
+                
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\([a-z|A-Z|0-9]+(,[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         String regexTarget = "\\?" + regexFact;
         
@@ -67,19 +74,20 @@ public  class Parser {
         
         try {
             for (String line:list) {
+                System.out.println("Parsing line: " + line);
                 line = line.replaceAll(" ", "");
                 if (line.matches(regexFact))
                     theory.addPredicate(parseFact(line));
-                else if (line.matches(regexRule))
-                    logician.addRule(parseRule(line));
                 else if (line.matches(regexTarget)) 
                 {
                     target = parseTarget(line);
                     break;
                 }
+                else if (line.equals("\n"))
+                    break;
                 else    
                 {
-                    System.out.println("somethings gone wrong on line "
+                    System.out.println("something's wrong w/line "
                             + line);
                 }
             }
@@ -91,6 +99,60 @@ public  class Parser {
     }
     
     /**
+     * 
+     * @param name - Comparison, Pointer, ZeroNonzero, Arithmetic expected 
+     * @throws java.io.IOException 
+     */
+    public void addRules(String name) throws IOException {
+        
+        System.out.println("!!!ADDING RULES " + name);
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*[a-z|A-Z|0-9]+(,_*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
+        
+        String fileWRules = "rules/_" + name + ".txt";
+        List<String> list;
+        list = Files.readAllLines(new File(fileWRules).toPath(), Charset.defaultCharset() );
+        
+        try {
+            for (String line:list) {
+                line = line.replaceAll(" ", "");
+                if (line.matches(regexRule))
+                    logician.addRule(parseRule(line));
+                else if (line.equals(""))
+                    break;
+                else    
+                {
+                    System.out.println("The line doesn't match the regex: "
+                            + line);
+                }
+            }
+        }
+        catch (PredicateCreateException | PredicateParseException pce) 
+        {
+            System.out.println(pce.getLocalizedMessage());
+        }        
+    }
+    
+    public void addAllRules () throws IOException {
+        this.addRules("Arithmetic");
+        this.addRules("Comparison");
+        this.addRules("Pointer");
+        this.addRules("ZeroNonzero");
+    }
+    
+    public Logician getLogician() {
+        return logician;
+    }
+
+    public Predicate getTarget() {
+        return target;
+    }
+
+    public Theory getTheory() {
+        return theory;
+    }
+    
+        /**
      * Парсинг строки вида NAME (arg1,arg2,...)
      * @param input входная строка
      * @return Predicate
@@ -100,55 +162,83 @@ public  class Parser {
     private Predicate parseFact(String input) throws PredicateParseException, PredicateCreateException {
         
         List<PredicateObject> argsLoc = new ArrayList<>();
-        String[] parts = input.split("\\(|\\)|,"); 
+        String[] parts = input.split("\\(|\\)|,");
+        
+        String intConstantRegex ="\\d+";
+        String strConstantRegex = "[A-Z]+";
+        String varRegex = "[a-z]+";
         
         try {
             PredicateType.valueOf(parts[0]);
         }
         catch (IllegalArgumentException iae) {
             
-            throw new PredicateParseException("Неверное имя предикатa");
+            throw new PredicateParseException("Неверное имя предикатa "
+                    + input);
 
         }
         if ((parts.length - 1)  != PredicateType.valueOf(parts[0]).getArgsNumber()) {
             throw new PredicateParseException("Неверное количество аргументов");
         }
         
-        //this weird construction is about adding all variables of predicate to local list
-        //and further checking if rhey exist in the global list
         for (int i = 1; i<parts.length; i++) {
-            PredicateObject po = predFactory.createVariableObject(4, parts[i]);
-                argsLoc.add(po);
+            PredicateObject po;
+            if (parts[i].matches(varRegex))
+                po = predFactory.createVariableObject(i, parts[i]); 
+            else if (parts[i].matches(intConstantRegex))
+                po = predFactory.createIntegerConstantObject(Long.decode(parts[i]), 1);
+            else
+                throw new PredicateParseException("Неправильное имя у переменной "
+                        + parts[i]);
+            argsLoc.add(po);
         }
         
-        
-        if (args.isEmpty())
-        {
-                for (PredicateObject po : argsLoc) {
-                    
-                        args.add(po);
-                    }          
-        }
-           
-        else {
-            int lngth = args.size();  
-            for (PredicateObject po : argsLoc) {
-                for (int i = 0; i<lngth; i++) {
-    //                String uname1 = pog.getUniqueName();
-    //                String uname2 = pog.getUniqueName();
-    //                System.out.println(uname1);
-    //                System.out.println(uname2);
-                    if (!args.get(i).getUniqueName().equals(po.getUniqueName()))
-    //                if (!args.contains(po)) 
-                        args.add(po);
-                    else
-                        argsLoc.set(argsLoc.indexOf(po),args.get(i));
-                }
-            }
-        }
-        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), argsLoc);
+        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), mixNMatch(argsLoc));
     }
+    
+    private Predicate parseItemQ (String input) throws PredicateParseException, PredicateCreateException {
+        
+        System.out.println("Parsing item " + input);
+        ArrayList<PredicateObject> argsLoc = new ArrayList<>();
+        input = input.replaceAll(" ", "");
+        String[] parts = input.split("\\(|\\)|,"); 
+        String intConstantRegex ="-{0,1}\\d+";
+        String simConstantRegex = "[A-Z]+";
+        String valueRegex = "[a-z]+";
+        String nonconstRegex = "_[a-z]+";
+        
+        try {
+            PredicateType.valueOf(parts[0]);
+        }
+        catch (IllegalArgumentException iae) {
+            
+            throw new PredicateParseException("Неверное имя предикатa "
+                    + input);
 
+        }
+        if ((parts.length - 1)  != PredicateType.valueOf(parts[0]).getArgsNumber()) {
+            throw new PredicateParseException("Неверное количество аргументов");
+        }
+        
+        PredicateObject qo ;
+        for (int i = 1; i<parts.length; i++) {
+            if (parts[i].matches(simConstantRegex))
+                qo = quantifierFactory.createQuantifierSimpleConstant(i, parts[i]);
+            else if (parts[i].matches(valueRegex))
+                qo = quantifierFactory.createQuantifierValue(i, parts[i]);    
+            else if (parts[i].matches(intConstantRegex))
+                qo = predFactory.createIntegerConstantObject(Long.decode(parts[i]), 1);
+            else if (parts[i].matches(nonconstRegex))
+                qo = quantifierFactory.createQuantifierNonconstValue(i, input);
+            else
+                throw new PredicateParseException("Неправильное имя у переменной "
+                        + parts[i]);
+            argsLoc.add(qo);
+        }
+        
+        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), mixNMatch(argsLoc));
+    }
+               
     /**
      * Парсинг строки вида NAME (arg1,arg2,...) :- NAME2(arg1,...), NAME3(arg1,...), ...
      * @param input
@@ -156,43 +246,50 @@ public  class Parser {
      * @throws PredicateParseException - если предикат неизвестного типа или с неверным кол-вом аргументов
      * @throws PredicateCreateException - если невозможно создать предикат
      */
-    private  InferenceRule parseRule(String input) throws PredicateParseException, PredicateCreateException {
-        //this thing looks like this 
-        //predtarg(arg1, arg2,...) :- pred1(arg1,arg2,...), pred2(arg1,arg2,...)
+    private InferenceRule parseRule(String input) throws PredicateParseException, PredicateCreateException {
         
-        Predicate target ;
-        List<Predicate> facts = new ArrayList<>();
+        System.out.println("=====PARSING LINE " + input);
+        
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*[a-z|A-Z|0-9]+(,_*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
+        String regexTarget = "\\?" + regexFact;
+        
+        Predicate right ;
+        List<Predicate> left = new ArrayList<>();
+        String sFacts, sTarget, parts[];
+                
         
         int delimiter = input.indexOf(":-");
         
-        String sTarget;
         try {
             sTarget = input.substring(0, delimiter);
         }
         catch (IndexOutOfBoundsException ioobe)
         {
-            System.out.println("Неправильный формат ввода");
-            return null;
+            throw new PredicateParseException("Неправильный формат ввода: "
+                    + input);
         }
         
-        target = parseFact(sTarget);
+        right = parseItemQ(sTarget);
         
-        String sFacts = input.substring(delimiter+2);
-        String part;
-        delimiter = sFacts.indexOf(")");
-        while (delimiter > 0) {
-            part = sFacts.substring(0,delimiter);
-            sFacts = sFacts.substring(delimiter+1);
+        sFacts = input.substring(delimiter+2);
+        
+        parts = sFacts.split("\\)");
+        
+        for (String it : parts)
+        {
+            if (it.startsWith(","))
+                    it = it.substring(1);
             try {
-                facts.add(parseFact(part));
+                left.add(parseItemQ(it));
             }
             catch (PredicateParseException ppe)
             {
-               return null;
+               throw new PredicateParseException(ppe.getMessage());
             }
-            delimiter = sFacts.indexOf(",");
-        }
-        return logFactory.createPrologRule(facts, target);
+        }        
+        
+        return logFactory.createPrologRule(left, right);
     }
 
     /**
@@ -206,20 +303,67 @@ public  class Parser {
         input = input.replaceAll("\\?", "");
         return parseFact(input);
     }
-
-    public Logician getLogician() {
-        return logician;
+    
+    
+    public List<PredicateObject> mixNMatch ( List<PredicateObject> local) {
+        //this weird construction meant to perform 
+        //adding all variables of predicate to local list
+        //and further checking if they exist in the global list
+        boolean found = false;
+         if (args.isEmpty())
+        {
+                for (PredicateObject po : local) {
+                        args.add(po);
+                }          
+        }
+        else {
+            int lngth = args.size();  
+            for (PredicateObject po : local) {                
+                for (int i = 0; i<lngth; i++) {
+                    if (args.get(i).getUniqueName().equals(po.getUniqueName())) { //если такая переменная не существует, то добавить
+                        found = true;
+                        local.set(local.indexOf(po),args.get(i));
+                        break;
+                    }
+                }
+                if (!found) {
+                    args.add(po);
+                }
+                found = false;
+            }
+        }
+        return local;
     }
-
-    public Predicate getTarget() {
-        return target;
+    
+     public List<PredicateObject> mixNMatch ( List<PredicateObject> global, List<PredicateObject> local) {
+        //this weird construction meant to perform 
+        //adding all variables of predicate to local list
+        //and further checking if they exist in the global list
+        boolean found = false;
+         if (global.isEmpty())
+        {
+                for (PredicateObject po : local) {
+                        global.add(po);
+                }          
+        }
+        else {
+            int lngth = global.size();  
+            for (PredicateObject po : local) {                
+                for (int i = 0; i<lngth; i++) {
+                    if (global.get(i).getUniqueName().equals(po.getUniqueName())) { 
+                        found = true;
+                        local.set(local.indexOf(po),global.get(i));
+                        break;
+                    }
+                }
+                if (!found) {
+                    global.add(po);
+                    lngth = global.size();
+                }
+                found = false;
+            }
+        }
+        return local;
     }
-
-    public Theory getTheory() {
-        return theory;
-    }
-
-    private int indexOf(PredicateObject po) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 }

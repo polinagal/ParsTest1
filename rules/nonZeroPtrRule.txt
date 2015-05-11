@@ -1,0 +1,1 @@
+NONZERO(v) :- PTR(u, v, w)

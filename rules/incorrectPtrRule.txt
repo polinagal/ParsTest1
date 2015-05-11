@@ -1,0 +1,1 @@
+INCORRECT(v) :- ZERO(v)

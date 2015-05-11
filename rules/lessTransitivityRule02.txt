@@ -1,0 +1,1 @@
+LESS(u, w) :- LESS(v, w), LESS_EQUALS(u, v)

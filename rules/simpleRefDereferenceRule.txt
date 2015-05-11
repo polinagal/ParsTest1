@@ -1,0 +1,1 @@
+EQUALS(u,w) :- PTR(u,v,0), DEREFFROM(w,v)

@@ -1,0 +1,1 @@
+NOT_EQUALS(u,w) :- EQUALS(u,v), NOT_EQUALS(v,w)
