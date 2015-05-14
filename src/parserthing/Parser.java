@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import s2a.inference.api.AbstractQuantifierFactory;
 import s2a.inference.api.AbstractTheoryFactory;
@@ -44,13 +45,17 @@ public  class Parser {
     private  Predicate target = 
             null;
     
-    private List<PredicateObject> args = new ArrayList<>();
+//    private List<PredicateObject> args = new ArrayList<>();
+    
+    private final HashMap<String, PredicateObject> args = new HashMap<>();
     
 
     public Parser(String filename) {
         
         this.filename = filename;
     }
+    
+    
 
 
     
@@ -135,9 +140,9 @@ public  class Parser {
     
     public void addAllRules () throws IOException {
         this.addRules("Arithmetic");
-        this.addRules("Comparison");
-        this.addRules("Pointer");
+        this.addRules("Comparison");        
         this.addRules("ZeroNonzero");
+        this.addRules("Pointer");
     }
     
     public Logician getLogician() {
@@ -190,10 +195,18 @@ public  class Parser {
             else
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
-            argsLoc.add(po);
+            if (args.containsKey(po.getUniqueName()))
+                argsLoc.add(args.get(po.getUniqueName()));
+            else {
+                argsLoc.add(po);
+                args.put(po.getUniqueName(), po);
+            }
+            
         }
-        
-        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), mixNMatch(argsLoc));
+        Predicate p = predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
+        System.out.println("GOT "
+                + p.getType() + "  " + p.getArguments());
+        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
     
     private Predicate parseItemQ (String input) throws PredicateParseException, PredicateCreateException {
@@ -209,6 +222,7 @@ public  class Parser {
         
         try {
             PredicateType.valueOf(parts[0]);
+            System.out.println(parts[0]);
         }
         catch (IllegalArgumentException iae) {
             
@@ -233,10 +247,21 @@ public  class Parser {
             else
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
-            argsLoc.add(qo);
+            
+            if (args.containsKey(qo.getUniqueName()))
+                argsLoc.add(args.get(qo.getUniqueName()));
+            else {
+                argsLoc.add(qo);
+                args.put(qo.getUniqueName(), qo);
+            }
         }
+        System.out.println(argsLoc);
         
-        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), mixNMatch(argsLoc));
+        PredicateType pt = PredicateType.valueOf(parts[0]);
+        Predicate p = predFactory.createPredicate(pt, (argsLoc));
+        System.out.println("GOTCHA "
+                + p.getType() + "  " + p.getArguments());
+        return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
                
     /**
@@ -289,6 +314,7 @@ public  class Parser {
             }
         }        
         
+        
         return logFactory.createPrologRule(left, right);
     }
 
@@ -304,66 +330,72 @@ public  class Parser {
         return parseFact(input);
     }
     
-    
-    public List<PredicateObject> mixNMatch ( List<PredicateObject> local) {
-        //this weird construction meant to perform 
-        //adding all variables of predicate to local list
-        //and further checking if they exist in the global list
-        boolean found = false;
-         if (args.isEmpty())
-        {
-                for (PredicateObject po : local) {
-                        args.add(po);
-                }          
-        }
-        else {
-            int lngth = args.size();  
-            for (PredicateObject po : local) {                
-                for (int i = 0; i<lngth; i++) {
-                    if (args.get(i).getUniqueName().equals(po.getUniqueName())) { //если такая переменная не существует, то добавить
-                        found = true;
-                        local.set(local.indexOf(po),args.get(i));
-                        break;
-                    }
-                }
-                if (!found) {
-                    args.add(po);
-                }
-                found = false;
-            }
-        }
-        return local;
+    private List<PredicateObject> someFunction (List<PredicateObject> local) {
+        return null;
+        
     }
     
-     public List<PredicateObject> mixNMatch ( List<PredicateObject> global, List<PredicateObject> local) {
-        //this weird construction meant to perform 
-        //adding all variables of predicate to local list
-        //and further checking if they exist in the global list
-        boolean found = false;
-         if (global.isEmpty())
-        {
-                for (PredicateObject po : local) {
-                        global.add(po);
-                }          
-        }
-        else {
-            int lngth = global.size();  
-            for (PredicateObject po : local) {                
-                for (int i = 0; i<lngth; i++) {
-                    if (global.get(i).getUniqueName().equals(po.getUniqueName())) { 
-                        found = true;
-                        local.set(local.indexOf(po),global.get(i));
-                        break;
-                    }
-                }
-                if (!found) {
-                    global.add(po);
-                    lngth = global.size();
-                }
-                found = false;
-            }
-        }
-        return local;
-    }
     
+//    
+//    public List<PredicateObject> mixNMatch ( List<PredicateObject> local) {
+//        //this weird construction meant to perform 
+//        //adding all variables of predicate to local list
+//        //and further checking if they exist in the global list
+//        boolean found = false;
+//         if (args.isEmpty())
+//        {
+//                for (PredicateObject po : local) {
+//                        args.add(po);
+//                }          
+//        }
+//        else {
+//            int lngth = args.size();  
+//            for (PredicateObject po : local) {                
+//                for (int i = 0; i<lngth; i++) {
+//                    if (args.get(i).getUniqueName().equals(po.getUniqueName())) { //если такая переменная не существует, то добавить
+//                        found = true;
+//                        local.set(local.indexOf(po),args.get(i));
+//                        break;
+//                    }
+//                }
+//                if (!found) {
+//                    args.add(po);
+//                }
+//                found = false;
+//            }
+//        }
+//        return local;
+//    }
+//    
+//     public List<PredicateObject> mixNMatch ( List<PredicateObject> global, List<PredicateObject> local) {
+//        //this weird construction meant to perform 
+//        //adding all variables of predicate to local list
+//        //and further checking if they exist in the global list
+//        boolean found = false;
+//         if (global.isEmpty())
+//        {
+//                for (PredicateObject po : local) {
+//                        global.add(po);
+//                }          
+//        }
+//        else {
+//            int lngth = global.size();  
+//            for (PredicateObject po : local) {                
+//                for (int i = 0; i<lngth; i++) {
+//                    if (global.get(i).getUniqueName().equals(po.getUniqueName())) { 
+//                        found = true;
+//                        local.set(local.indexOf(po),global.get(i));
+//                        break;
+//                    }
+//                }
+//                if (!found) {
+//                    global.add(po);
+//                    lngth = global.size();
+//                }
+//                found = false;
+//            }
+//        }
+//        return local;
+//    }
+//    
 }
