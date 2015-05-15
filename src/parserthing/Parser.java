@@ -45,9 +45,9 @@ public  class Parser {
     private  Predicate target = 
             null;
     
-//    private List<PredicateObject> args = new ArrayList<>();
+    private List<PredicateObject> args = new ArrayList<>();
     
-    private final HashMap<String, PredicateObject> args = new HashMap<>();
+    private final HashMap<String, PredicateObject> args1 = new HashMap<>();
     
 
     public Parser(String filename) {
@@ -70,7 +70,7 @@ public  class Parser {
        
     public  void parseFile () throws IOException {
                 
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\([a-z|A-Z|0-9]+(,[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))(,((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+)))*\\)";       //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         String regexTarget = "\\?" + regexFact;
         
@@ -101,6 +101,7 @@ public  class Parser {
         {
             System.out.println(pce.getLocalizedMessage());
         }
+        args1.clear();
     }
     
     /**
@@ -111,7 +112,7 @@ public  class Parser {
     public void addRules(String name) throws IOException {
         
         System.out.println("!!!ADDING RULES " + name);
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*[a-z|A-Z|0-9]+(,_*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*-*[a-z|A-Z|0-9]+(,_*-*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         
         String fileWRules = "rules/_" + name + ".txt";
@@ -142,7 +143,7 @@ public  class Parser {
         this.addRules("Arithmetic");
         this.addRules("Comparison");        
         this.addRules("ZeroNonzero");
-        this.addRules("Pointer");
+//        this.addRules("Pointer");
     }
     
     public Logician getLogician() {
@@ -157,7 +158,7 @@ public  class Parser {
         return theory;
     }
     
-        /**
+    /**
      * Парсинг строки вида NAME (arg1,arg2,...)
      * @param input входная строка
      * @return Predicate
@@ -168,8 +169,7 @@ public  class Parser {
         
         List<PredicateObject> argsLoc = new ArrayList<>();
         String[] parts = input.split("\\(|\\)|,");
-        
-        String intConstantRegex ="\\d+";
+        String intConstantRegex ="-{0,1}\\d+";
         String strConstantRegex = "[A-Z]+";
         String varRegex = "[a-z]+";
         
@@ -195,11 +195,11 @@ public  class Parser {
             else
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
-            if (args.containsKey(po.getUniqueName()))
-                argsLoc.add(args.get(po.getUniqueName()));
+            if (args1.containsKey(po.getUniqueName()))
+                argsLoc.add(args1.get(po.getUniqueName()));
             else {
                 argsLoc.add(po);
-                args.put(po.getUniqueName(), po);
+                args1.put(po.getUniqueName(), po);
             }
             
         }
@@ -208,6 +208,7 @@ public  class Parser {
                 + p.getType() + "  " + p.getArguments());
         return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
+    
     
     private Predicate parseItemQ (String input) throws PredicateParseException, PredicateCreateException {
         
@@ -234,33 +235,37 @@ public  class Parser {
             throw new PredicateParseException("Неверное количество аргументов");
         }
         
+//        int uNr = (int) (Math.random()*input.hashCode()+1);
+        
         PredicateObject qo ;
         for (int i = 1; i<parts.length; i++) {
+            int uNr = input.hashCode()/10000*i;
             if (parts[i].matches(simConstantRegex))
-                qo = quantifierFactory.createQuantifierSimpleConstant(i, parts[i]);
+                qo = quantifierFactory.createQuantifierSimpleConstant(uNr, parts[i]);
             else if (parts[i].matches(valueRegex))
-                qo = quantifierFactory.createQuantifierValue(i, parts[i]);    
+                qo = quantifierFactory.createQuantifierValue(uNr, parts[i]);    
             else if (parts[i].matches(intConstantRegex))
                 qo = predFactory.createIntegerConstantObject(Long.decode(parts[i]), 1);
             else if (parts[i].matches(nonconstRegex))
-                qo = quantifierFactory.createQuantifierNonconstValue(i, input);
+                qo = quantifierFactory.createQuantifierNonconstValue(uNr, input);
             else
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
             
-            if (args.containsKey(qo.getUniqueName()))
-                argsLoc.add(args.get(qo.getUniqueName()));
+            if (args1.containsKey(qo.getUniqueName()))
+                argsLoc.add(args1.get(qo.getUniqueName()));
+            else if (args1.containsValue(qo))
+                System.out.println("бедабеда!");
+                    
             else {
                 argsLoc.add(qo);
-                args.put(qo.getUniqueName(), qo);
+                args1.put(qo.getUniqueName(), qo);
+                
             }
         }
         System.out.println(argsLoc);
         
-        PredicateType pt = PredicateType.valueOf(parts[0]);
-        Predicate p = predFactory.createPredicate(pt, (argsLoc));
-        System.out.println("GOTCHA "
-                + p.getType() + "  " + p.getArguments());
+       
         return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
                
@@ -272,10 +277,11 @@ public  class Parser {
      * @throws PredicateCreateException - если невозможно создать предикат
      */
     private InferenceRule parseRule(String input) throws PredicateParseException, PredicateCreateException {
+        args1.clear();
         
         System.out.println("=====PARSING LINE " + input);
         
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*[a-z|A-Z|0-9]+(,_*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))(,((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+)))*\\)";       //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         String regexTarget = "\\?" + regexFact;
         
@@ -313,7 +319,7 @@ public  class Parser {
                throw new PredicateParseException(ppe.getMessage());
             }
         }        
-        
+        args1.clear();
         
         return logFactory.createPrologRule(left, right);
     }
@@ -334,68 +340,4 @@ public  class Parser {
         return null;
         
     }
-    
-    
-//    
-//    public List<PredicateObject> mixNMatch ( List<PredicateObject> local) {
-//        //this weird construction meant to perform 
-//        //adding all variables of predicate to local list
-//        //and further checking if they exist in the global list
-//        boolean found = false;
-//         if (args.isEmpty())
-//        {
-//                for (PredicateObject po : local) {
-//                        args.add(po);
-//                }          
-//        }
-//        else {
-//            int lngth = args.size();  
-//            for (PredicateObject po : local) {                
-//                for (int i = 0; i<lngth; i++) {
-//                    if (args.get(i).getUniqueName().equals(po.getUniqueName())) { //если такая переменная не существует, то добавить
-//                        found = true;
-//                        local.set(local.indexOf(po),args.get(i));
-//                        break;
-//                    }
-//                }
-//                if (!found) {
-//                    args.add(po);
-//                }
-//                found = false;
-//            }
-//        }
-//        return local;
-//    }
-//    
-//     public List<PredicateObject> mixNMatch ( List<PredicateObject> global, List<PredicateObject> local) {
-//        //this weird construction meant to perform 
-//        //adding all variables of predicate to local list
-//        //and further checking if they exist in the global list
-//        boolean found = false;
-//         if (global.isEmpty())
-//        {
-//                for (PredicateObject po : local) {
-//                        global.add(po);
-//                }          
-//        }
-//        else {
-//            int lngth = global.size();  
-//            for (PredicateObject po : local) {                
-//                for (int i = 0; i<lngth; i++) {
-//                    if (global.get(i).getUniqueName().equals(po.getUniqueName())) { 
-//                        found = true;
-//                        local.set(local.indexOf(po),global.get(i));
-//                        break;
-//                    }
-//                }
-//                if (!found) {
-//                    global.add(po);
-//                    lngth = global.size();
-//                }
-//                found = false;
-//            }
-//        }
-//        return local;
-//    }
-//    
 }

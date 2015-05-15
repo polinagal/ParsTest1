@@ -427,17 +427,17 @@ public class PrologLogicianTest {
 //                predFactory.createPredicate(PredicateType.EQUALS, x, z)));
 //    }
 //
-//    @Test
-//    public void testDoubleMinus() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF,
-//                y, x, predFactory.createIntegerConstantObject(-5, 1)));
-//        final Logician logician = factory.createLogician();
-//        factory.addArithmeticRules(logician);
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.SUM,
-//                        y, x, predFactory.createIntegerConstantObject(5, 1))));
-//    }
+    @Test
+    public void testDoubleMinus() throws PredicateCreateException {
+        final Theory theory = thFactory.createTheory();
+        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF,
+                y, x, predFactory.createIntegerConstantObject(-5, 1)));
+        final Logician logician = factory.createLogician();
+        factory.addArithmeticRules(logician);
+        Assert.assertTrue(logician.proveTrue(theory,
+                predFactory.createPredicate(PredicateType.SUM,
+                        y, x, predFactory.createIntegerConstantObject(5, 1))));
+    }
 //
 //    @Test
 //    public void testModusPonens() throws PredicateCreateException {
