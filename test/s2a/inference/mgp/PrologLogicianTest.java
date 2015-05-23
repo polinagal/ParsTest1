@@ -725,32 +725,32 @@ public class PrologLogicianTest {
 //                        predFactory.createIntegerConstantObject(4, 1))));
 //    }
 //
-//    @Test
-//    public void testSomethingMinusSomethingOneOfMultiplySomething() throws PredicateCreateException {
-//        final Theory theory = thFactory.createTheory();
-//        // x=y-z
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF, x, y, z));
-//        // w=x*4
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.PROD, w, x,
-//                predFactory.createIntegerConstantObject(4, 1)));
-//        // arr0(a)=z, arr1(b)=z
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, arr[0], z));
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, arr[1], z));
-//        // oneof(y=arr0(a),y=arr1(b))
-//        theory.addPredicate(predFactory.createPredicate(PredicateType.ONEOF,
-//                predFactory.createPredicate(PredicateType.EQUALS, y, arr[0]),
-//                predFactory.createPredicate(PredicateType.EQUALS, y, arr[1])));
-//        final Logician logician = factory.createLogician();
-//        factory.addAllRules(logician);
-//        // w<4?
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS, w,
-//                        predFactory.createIntegerConstantObject(4, 1))));
-//        // w<8?
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                predFactory.createPredicate(PredicateType.LESS, w,
-//                        predFactory.createIntegerConstantObject(8, 1))));
-//    }
+    @Test
+    public void testSomethingMinusSomethingOneOfMultiplySomething() throws PredicateCreateException {
+        final Theory theory = thFactory.createTheory();
+        // x=y-z
+        theory.addPredicate(predFactory.createPredicate(PredicateType.DIFF, x, y, z));
+        // w=x*4
+        theory.addPredicate(predFactory.createPredicate(PredicateType.PROD, w, x,
+                predFactory.createIntegerConstantObject(4, 1)));
+        // arr0(a)=z, arr1(b)=z
+        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, arr[0], z));
+        theory.addPredicate(predFactory.createPredicate(PredicateType.EQUALS, arr[1], z));
+        // oneof(y=arr0(a),y=arr1(b))
+        theory.addPredicate(predFactory.createPredicate(PredicateType.ONEOF,
+                predFactory.createPredicate(PredicateType.EQUALS, y, arr[0]),
+                predFactory.createPredicate(PredicateType.EQUALS, y, arr[1])));
+        final Logician logician = factory.createLogician();
+        factory.addAllRules(logician);
+        // w<4?
+        Assert.assertTrue(logician.proveTrue(theory,
+                predFactory.createPredicate(PredicateType.LESS, w,
+                        predFactory.createIntegerConstantObject(4, 1))));
+        // w<8?
+        Assert.assertTrue(logician.proveTrue(theory,
+                predFactory.createPredicate(PredicateType.LESS, w,
+                        predFactory.createIntegerConstantObject(8, 1))));
+    }
 //
 //    @Test
 //    public void testPointerToArray() throws PredicateCreateException {

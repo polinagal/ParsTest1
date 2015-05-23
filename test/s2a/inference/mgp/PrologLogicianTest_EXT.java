@@ -100,6 +100,22 @@ public class PrologLogicianTest_EXT {
      
     }
    
+    @Test
+    public void testRegexComplex () {
+        String input = "ONEOF(EQUALS(a,2),EQUALS(b,5),EQUALS(A),3,a)";
+        String input_sim = "EQUALS(a,b)";
+        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
+        String regexPred = "([A-Z]+(_[A-Z]+)*\\(" + regexArg + "(," + regexArg + ")*\\))";                                  //^ - the beginning and $ - the end
+        String regexArgComplex = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+)|"+regexPred+")";
+        String regexPredComplex =  "[A-Z]+(_[A-Z]+)*\\(" + regexArgComplex + "(," + regexArgComplex + ")*\\)";
+        String regexArgVeryComplex = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+)|"+regexPredComplex+")";
+        String regexPredVeryComplex = "[A-Z]+(_[A-Z]+)*\\(" + regexArgVeryComplex + "(," + regexArgVeryComplex + ")*\\)";
+        System.out.println(regexPredVeryComplex);
+        System.out.println(regexPred);
+        System.out.println(input.matches(regexPredVeryComplex));
+        System.out.println(input_sim.matches(regexPredComplex));
+    }
+    
     //ok
     @Ignore
     @Test
@@ -885,19 +901,6 @@ public class PrologLogicianTest_EXT {
     
 //    @Test
 //    public void testSimpleOneof() throws PredicateCreateException {
-//        parser = new Parser("test_inp/testSimpleOneof.txt");
-//        parser.parseFile();
-//        parser.addRules("Comparison");
-//        
-//        final Logician logician = parser.getLogician();
-//        
-//        final Theory theory = parser.getTheory();
-//        
-//        final Predicate target = parser.getTarget();
-//                
-//        Assert.assertTrue(logician.proveTrue(theory,
-//                target));
-//        
 //        final Theory theory = thFactory.createTheory();
 //        final Predicate p1 = predFactory.createPredicate(PredicateType.EQUALS,
 //                x, predFactory.createIntegerConstantObject(1, 1));
