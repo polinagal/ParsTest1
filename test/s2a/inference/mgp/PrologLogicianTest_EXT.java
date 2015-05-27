@@ -3,21 +3,16 @@ package s2a.inference.mgp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import org.junit.*;
 import parserthing.*;
 import s2a.inference.api.AbstractQuantifierFactory;
 import s2a.inference.api.AbstractTheoryFactory;
-import s2a.inference.api.InferenceRule;
 import s2a.inference.api.Logician;
-import s2a.inference.api.QuantifierValue;
 import s2a.inference.api.Theory;
 import s2a.predicates.api.AbstractPredicateFactory;
 import s2a.predicates.api.Predicate;
 import s2a.predicates.api.PredicateCreateException;
 import s2a.predicates.api.PredicateObject;
-import s2a.predicates.api.PredicateType;
-import s2a.predicates.api.VariableObject;
 import s2a.util.config.DepsConfigManager;
 
 /**
@@ -105,34 +100,16 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testVerySimple() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testVerySimple.txt");
-        parser.parseFile();
-        //ok
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+                
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
     @Ignore
     @Test
     public void testNegateVerySimple() throws PredicateCreateException, IOException {
-        
         parser = new Parser("test_inp/testNegativeVerySimple.txt");
-        parser.parseFile();
-        //ok
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertFalse(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -141,19 +118,7 @@ public class PrologLogicianTest_EXT {
     public void testLessToLessEquals() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testLessToLessEquals.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-//        logFactory.addComparisonRules(logician);
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -161,18 +126,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testZeroDefinition() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testZeroDefinition.txt");
-        parser.parseFile();
-        parser.addRules("ZeroNonzero");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-               
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
-        
+        Assert.assertTrue(parser.prove());
         
     }
     
@@ -182,17 +136,8 @@ public class PrologLogicianTest_EXT {
     public void testZeroNegate() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testZeroNegate.txt");
-        parser.parseFile();
-        parser.addRules("ZeroNonzero");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertFalse(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
+
     }
     
     //ok
@@ -200,37 +145,15 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testNonZeroDefinition() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testNonZeroDefinition.txt");
-        parser.parseFile();
-        parser.addRules("ZeroNonzero");
-        
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
-    //ok
+    //problemo
     @Ignore
     @Test
     public void testNonZeroNegate() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testNonZeroNegate.txt");
-        parser.parseFile();
-        parser.addRules("ZeroNonzero");
-        
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertFalse(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -239,19 +162,7 @@ public class PrologLogicianTest_EXT {
     public void testNonZeroChain() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testNonZeroChain.txt");
-        parser.parseFile();
-        
-        parser.addAllRules();
-
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -260,20 +171,7 @@ public class PrologLogicianTest_EXT {
     public void testNotNonZero() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testNotNonZero.txt");
-        parser.parseFile();
-        parser.addAllRules();
-        
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        
-                
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -281,20 +179,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testOrFalse1() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testOrFalse1.txt");
-        parser.parseFile();
-        
-        parser.addRules("ZeroNonzero");
-        
-                
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -302,20 +187,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testOrFalse2() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testOrFalse2.txt");
-        parser.parseFile();
-        parser.addRules("ZeroNonzero");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-//        logFactory.addZeroNonzeroRules(logician);
-
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -323,20 +195,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testOrTrue1() throws PredicateCreateException, IOException {
          parser = new Parser("test_inp/testOrTrue1.txt");
-        parser.parseFile();
-        
-        parser.addRules("ZeroNonzero");
-                        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-                
-//        logFactory.addZeroNonzeroRules(logician);
-        
-        Assert.assertFalse(logician.proveTrue(theory,
-                 target));
+        Assert.assertFalse(parser.prove());
     }
     
     //ok
@@ -344,18 +203,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testOrTrue2() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testOrTrue2.txt");
-        parser.parseFile();
-        
-        parser.addRules("ZeroNonzero");
-                        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-                
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
        
     //ok
@@ -363,36 +211,15 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testAndTrue1() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testAndTrue1.txt");
-        parser.parseFile();                
-        parser.addAllRules();
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
     @Ignore
     @Test
     public void testAndTrue2() throws PredicateCreateException, IOException {
-    parser = new Parser("test_inp/testAndTrue2.txt");
-    parser.parseFile();                
-    parser.addAllRules();
-
-    final Logician logician = parser.getLogician();
-
-    final Theory theory = parser.getTheory();
-
-    final Predicate target = parser.getTarget();
-
-
-    Assert.assertTrue(logician.proveTrue(theory,
-             target));
+        parser = new Parser("test_inp/testAndTrue2.txt");
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -400,37 +227,15 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testCommutativity() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testCommutativity.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
-        
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
-    @Ignore
+//    @Ignore
     @Test
     public void testCommutativityNegate() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testCommutativityNegate.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-
-
-        Assert.assertFalse(logician.proveTrue(theory,
-                 target));
+        Assert.assertFalse(parser.prove());
         
     }
     
@@ -439,17 +244,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testAssociativity() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testAssociativity.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
     
     //ok
@@ -458,18 +253,7 @@ public class PrologLogicianTest_EXT {
     public void testAssociativityNegate() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testAssociativityNegate.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-
-
-        Assert.assertFalse(logician.proveTrue(theory,
-                 target));
+        Assert.assertFalse(parser.prove());
         
     }
 
@@ -478,17 +262,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testAssociativityExtra() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testAssociativityExtra.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
         
     }
 
@@ -497,17 +271,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testAssociativityChain() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testAssociativityChain.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -515,17 +279,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testCommAndAssoc() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testCommAndAssoc.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));
+        Assert.assertTrue(parser.prove());
     }
    
     //ok
@@ -534,17 +288,7 @@ public class PrologLogicianTest_EXT {
     public void testAssociativityNumbers() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testAssociativityNumbers.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));        
+        Assert.assertTrue(parser.prove());       
     }
     
     //ok
@@ -553,17 +297,7 @@ public class PrologLogicianTest_EXT {
     public void testAssociativityChainNumbers() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testAssociativityChainNumbers.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));       
+       Assert.assertTrue(parser.prove()); 
     }
    
     //ok
@@ -571,18 +305,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testVariableShortComparisons() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testVariableShortComparisons.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));  
-       
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -591,17 +314,7 @@ public class PrologLogicianTest_EXT {
     public void testVariableReverseComparisons() throws PredicateCreateException, IOException {
         // y<=w <== y<=z, z<=w (!) <= y=z
         parser = new Parser("test_inp/testVariableReverseComparisons.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));  
+        Assert.assertTrue(parser.prove());
        
     }
 
@@ -611,17 +324,7 @@ public class PrologLogicianTest_EXT {
     public void testVariableChainComparisons() throws PredicateCreateException, IOException {
         // x<w <== x<y (!), y<=w <== y<=z, z<=w (!) <= y=z
         parser = new Parser("test_inp/testVariableChainComparisons.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));  
+        Assert.assertTrue(parser.prove());
         
     }
 
@@ -633,17 +336,7 @@ public class PrologLogicianTest_EXT {
         // y<=EX <= y=EX
         // y<=7 <== y<=4 (?), 4<=7 (!) <= y=4
         parser = new Parser("test_inp/testNumberShortComparisons.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-
-        Assert.assertTrue(logician.proveTrue(theory,
-                 target));  
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -655,17 +348,7 @@ public class PrologLogicianTest_EXT {
         // y<=EX <= y=EX
         // y<=7 <== y<=4 (?), 4<=7 (!) <= y=4
         parser = new Parser("test_inp/testNumberShortComparisonsNegate.txt");
-        parser.parseFile();                
-        parser.addRules("Comparison");
-
-        final Logician logician = parser.getLogician();
-
-        final Theory theory = parser.getTheory();
-
-        final Predicate target = parser.getTarget();
-
-        Assert.assertFalse(logician.proveTrue(theory,
-                 target));  
+        Assert.assertTrue(parser.prove());
         
     }
 
@@ -675,37 +358,17 @@ public class PrologLogicianTest_EXT {
     public void testNumberChainComparisons() throws PredicateCreateException, IOException {
         
         parser = new Parser("test_inp/testNumberChainComparisons.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
         
     }
 
     //ok
-    @Ignore 
+//    @Ignore 
     @Test
     public void testNumberChainComparisonsNegate() throws PredicateCreateException, IOException {
         //         x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
         parser = new Parser("test_inp/testNumberChainComparisonsNegate.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertFalse(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -713,17 +376,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testLessAndGreater() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testLessAndGreater.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
 
     //ok
@@ -731,17 +384,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testLessAndNotEquals() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testLessAndNotEquals.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
         
     }
 
@@ -750,17 +393,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testNegEquals() throws PredicateCreateException, IOException {
         parser = new Parser("test_inp/testNegEquals.txt");
-        parser.parseFile();
-        parser.addRules("Arithmetic");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-        
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
         
     }
 
@@ -769,17 +402,7 @@ public class PrologLogicianTest_EXT {
     @Test
     public void testDoubleMinus() throws PredicateCreateException , IOException{
         parser = new Parser("test_inp/testDoubleMinus.txt");
-        parser.parseFile();
-        parser.addRules("Arithmetic");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-                
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
+        Assert.assertTrue(parser.prove());
     }
 //
 //    @Test

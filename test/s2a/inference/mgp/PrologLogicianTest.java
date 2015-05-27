@@ -47,7 +47,18 @@ public class PrologLogicianTest {
         DepsConfigManager.getInstance().setTheoryName("smt");
     }
 
-
+    @Test
+    public void sometest() throws PredicateCreateException {
+        final Theory theory = thFactory.createTheory();
+        theory.addPredicate(predFactory.createPredicate(PredicateType.NONZERO, x));
+        final Logician logician = factory.createLogician();
+        factory.addZeroNonzeroRules(logician);
+        System.out.println(logician.proveFalse(theory,
+                predFactory.createPredicate(PredicateType.EQUALS, x,
+                        predFactory.createIntegerConstantObject(1, 1))));
+        
+    }
+    
 //    @Test
 //    public void testVerySimple() throws PredicateCreateException {
 //        final Theory theory = thFactory.createTheory();

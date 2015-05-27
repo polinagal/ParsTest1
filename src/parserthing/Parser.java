@@ -22,6 +22,8 @@ import s2a.predicates.api.PredicateType;
 
 public  class Parser {
     
+    private static int uniqueCode = 1;
+    
     private final String filename;
     
     private  final LogicianFactory logFactory = 
@@ -44,22 +46,24 @@ public  class Parser {
     
     private  Predicate target = 
             null;
+        
+    private final HashMap<String, PredicateObject> args = new HashMap<>();
     
-    private List<PredicateObject> args = new ArrayList<>();
-    
-    private final HashMap<String, PredicateObject> args1 = new HashMap<>();
-    
+    private boolean isTarget = true;
 
     public Parser(String filename) {
         
         this.filename = filename;
     }
-    
-    
-
-
-    
-    
+  
+    public boolean prove () throws IOException {
+        addAllRules();
+        parseFile(filename);
+        if (isTarget)
+            return(logician.proveTrue(theory, target));
+        else
+            return(logician.proveFalse(theory, target));
+    }
     /**
      * Просмотр файла по строкам и в соответствии с видом каждой строки 
      * принимается решение о принадлежности данных к фактам, правилам или 
@@ -67,12 +71,13 @@ public  class Parser {
      * @param filename - имя просматриваемого файла
      * @throws IOException 
      */
-       
-    public  void parseFile () throws IOException {
-                
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\(((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))(,((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+)))*\\)";       //^ - the beginning and $ - the end
+    public  void parseFile (String filename) throws IOException {
+         
+        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
-        String regexTarget = "\\?" + regexFact;
+        String regexTargetTrue = "\\?" + regexFact;
+        String regexTargetFalse = "\\?!" + regexFact;
         
 
         List<String> list = Files.readAllLines(new File(filename).toPath(), Charset.defaultCharset() );
@@ -83,13 +88,19 @@ public  class Parser {
                 line = line.replaceAll(" ", "");
                 if (line.matches(regexFact))
                     theory.addPredicate(parseFact(line));
-                else if (line.matches(regexTarget)) 
+                else if (line.matches(regexTargetTrue)) 
                 {
                     target = parseTarget(line);
                     break;
                 }
-                else if (line.equals("\n"))
+                else if (line.matches(regexTargetFalse)) 
+                {
+                    isTarget = false;
+                    target = parseTarget(line);
                     break;
+                }
+                else if (line.equals("\n"))
+                    ;
                 else    
                 {
                     System.out.println("something's wrong w/line "
@@ -101,7 +112,51 @@ public  class Parser {
         {
             System.out.println(pce.getLocalizedMessage());
         }
-        args1.clear();
+        args.clear();
+    }
+    
+    public  void parseFile () throws IOException {
+         
+        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
+        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
+        String regexTargetTrue = "\\?" + regexFact;
+        String regexTargetFalse = "\\?!" + regexFact;
+        
+
+        List<String> list = Files.readAllLines(new File(filename).toPath(), Charset.defaultCharset() );
+        
+        try {
+            for (String line:list) {
+                System.out.println("Parsing line: " + line);
+                line = line.replaceAll(" ", "");
+                if (line.matches(regexFact))
+                    theory.addPredicate(parseFact(line));
+                else if (line.matches(regexTargetTrue)) 
+                {
+                    target = parseTarget(line);
+                    break;
+                }
+                else if (line.matches(regexTargetFalse)) 
+                {
+                    isTarget = false;
+                    target = parseTarget(line);
+                    break;
+                }
+                else if (line.equals("\n"))
+                    ;
+                else    
+                {
+                    System.out.println("something's wrong w/line "
+                            + line);
+                }
+            }
+        }
+        catch (PredicateCreateException | PredicateParseException pce) 
+        {
+            System.out.println(pce.getLocalizedMessage());
+        }
+        args.clear();
     }
     
     /**
@@ -112,7 +167,8 @@ public  class Parser {
     public void addRules(String name) throws IOException {
         
         System.out.println("!!!ADDING RULES " + name);
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\(_*-*[a-z|A-Z|0-9]+(,_*-*[a-z|A-Z|0-9]+)*\\)";       //^ - the beginning and $ - the end
+        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";   //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         
         String fileWRules = "rules/_" + name + ".txt";
@@ -170,7 +226,6 @@ public  class Parser {
         List<PredicateObject> argsLoc = new ArrayList<>();
         String[] parts = input.split("\\(|\\)|,");
         String intConstantRegex ="-{0,1}\\d+";
-        String strConstantRegex = "[A-Z]+";
         String varRegex = "[a-z]+";
         
         try {
@@ -189,17 +244,17 @@ public  class Parser {
         for (int i = 1; i<parts.length; i++) {
             PredicateObject po;
             if (parts[i].matches(varRegex))
-                po = predFactory.createVariableObject(i, parts[i]); 
+                po = predFactory.createVariableObject(4, parts[i]); 
             else if (parts[i].matches(intConstantRegex))
                 po = predFactory.createIntegerConstantObject(Long.decode(parts[i]), 1);
             else
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
-            if (args1.containsKey(po.getUniqueName()))
-                argsLoc.add(args1.get(po.getUniqueName()));
+            if (args.containsKey(po.getUniqueName()))
+                argsLoc.add(args.get(po.getUniqueName()));
             else {
                 argsLoc.add(po);
-                args1.put(po.getUniqueName(), po);
+                args.put(po.getUniqueName(), po);
             }
             
         }
@@ -208,8 +263,7 @@ public  class Parser {
                 + p.getType() + "  " + p.getArguments());
         return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
-    
-    
+        
     private Predicate parseItemQ (String input) throws PredicateParseException, PredicateCreateException {
         
         System.out.println("Parsing item " + input);
@@ -235,11 +289,9 @@ public  class Parser {
             throw new PredicateParseException("Неверное количество аргументов");
         }
         
-//        int uNr = (int) (Math.random()*input.hashCode()+1);
-        
         PredicateObject qo ;
         for (int i = 1; i<parts.length; i++) {
-            int uNr = input.hashCode()/10000*i;
+            int uNr = uniqueCode++;
             if (parts[i].matches(simConstantRegex))
                 qo = quantifierFactory.createQuantifierSimpleConstant(uNr, parts[i]);
             else if (parts[i].matches(valueRegex))
@@ -252,20 +304,18 @@ public  class Parser {
                 throw new PredicateParseException("Неправильное имя у переменной "
                         + parts[i]);
             
-            if (args1.containsKey(qo.getUniqueName()))
-                argsLoc.add(args1.get(qo.getUniqueName()));
-            else if (args1.containsValue(qo))
+            if (args.containsKey(qo.getUniqueName()))
+                argsLoc.add(args.get(qo.getUniqueName()));
+            else if (args.containsValue(qo))
                 System.out.println("бедабеда!");
                     
             else {
                 argsLoc.add(qo);
-                args1.put(qo.getUniqueName(), qo);
-                
+                args.put(qo.getUniqueName(), qo);
             }
         }
         System.out.println(argsLoc);
         
-       
         return predFactory.createPredicate(PredicateType.valueOf(parts[0]), (argsLoc));
     }
                
@@ -277,7 +327,7 @@ public  class Parser {
      * @throws PredicateCreateException - если невозможно создать предикат
      */
     private InferenceRule parseRule(String input) throws PredicateParseException, PredicateCreateException {
-        args1.clear();
+        args.clear();
         
         System.out.println("=====PARSING LINE " + input);
         
@@ -319,7 +369,7 @@ public  class Parser {
                throw new PredicateParseException(ppe.getMessage());
             }
         }        
-        args1.clear();
+        args.clear();
         
         return logFactory.createPrologRule(left, right);
     }
@@ -333,11 +383,7 @@ public  class Parser {
      */
     private  Predicate parseTarget(String input) throws PredicateParseException, PredicateCreateException {
         input = input.replaceAll("\\?", "");
+        input = input.replaceAll("\\!", "");
         return parseFact(input);
-    }
-    
-    private List<PredicateObject> someFunction (List<PredicateObject> local) {
-        return null;
-        
     }
 }

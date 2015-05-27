@@ -1,2 +1,2 @@
 EQUALS(x,1)
-?ZERO(x)
+?!ZERO(x)
