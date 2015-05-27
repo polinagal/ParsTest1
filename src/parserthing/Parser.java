@@ -115,7 +115,8 @@ public  class Parser {
         args.clear();
     }
     
-    public  void parseFile () throws IOException {
+    public  void parseFile () throws IOException, PredicateParseException, PredicateCreateException {
+        boolean targetFound = false;
          
         String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
         String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
@@ -126,7 +127,6 @@ public  class Parser {
 
         List<String> list = Files.readAllLines(new File(filename).toPath(), Charset.defaultCharset() );
         
-        try {
             for (String line:list) {
                 System.out.println("Parsing line: " + line);
                 line = line.replaceAll(" ", "");
@@ -135,12 +135,14 @@ public  class Parser {
                 else if (line.matches(regexTargetTrue)) 
                 {
                     target = parseTarget(line);
+                    targetFound = true;
                     break;
                 }
                 else if (line.matches(regexTargetFalse)) 
                 {
                     isTarget = false;
                     target = parseTarget(line);
+                    targetFound = true;
                     break;
                 }
                 else if (line.equals("\n"))
@@ -151,14 +153,54 @@ public  class Parser {
                             + line);
                 }
             }
-        }
-        catch (PredicateCreateException | PredicateParseException pce) 
-        {
-            System.out.println(pce.getLocalizedMessage());
-        }
+                
+        if (!targetFound)
+            throw new PredicateParseException("Target-predicate not found");
         args.clear();
     }
     
+    public void parseText (String text) throws PredicateParseException, PredicateCreateException {
+        boolean targetFound = false;
+        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
+        String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
+        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
+        String regexTargetTrue = "\\?" + regexFact;
+        String regexTargetFalse = "\\?!" + regexFact;
+        
+        String list[] = text.split("\n");
+        
+       
+            for (String line:list) {
+                System.out.println("Parsing line: " + line);
+                line = line.replaceAll(" ", "");
+                if (line.matches(regexFact))
+                    theory.addPredicate(parseFact(line));
+                else if (line.matches(regexTargetTrue)) 
+                {
+                    target = parseTarget(line);
+                    targetFound = true;
+                    break;
+                }
+                else if (line.matches(regexTargetFalse)) 
+                {
+                    isTarget = false;
+                    target = parseTarget(line);
+                    targetFound = true;
+                    break;
+                }
+                else if (line.equals("\n"))
+                    ;
+                else    
+                {
+                    System.out.println("something's wrong w/line "
+                            + line);
+                }
+            }
+        
+        if (!targetFound)
+            throw new PredicateParseException("Target-predicate not found!");
+        args.clear();        
+    }
     /**
      * 
      * @param name - Comparison, Pointer, ZeroNonzero, Arithmetic expected 
