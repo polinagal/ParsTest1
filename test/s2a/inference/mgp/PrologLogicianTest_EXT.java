@@ -464,44 +464,44 @@ public class PrologLogicianTest_EXT {
 //    }
 //
     //ok
-    @Ignore
-    @Test
-    public void testOneofParts1() throws PredicateCreateException, IOException, PredicateParseException {
-        parser = new Parser("test_inp/testOneofParts1.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-                
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
-        
-        
-    }
+//    @Ignore
+//    @Test
+//    public void testOneofParts1() throws PredicateCreateException, IOException, PredicateParseException {
+//        parser = new Parser("test_inp/testOneofParts1.txt");
+//        parser.parseFile();
+//        parser.addRules("Comparison");
+//        
+//        final Logician logician = parser.getLogician();
+//        
+//        final Theory theory = parser.getTheory();
+//        
+//        final Predicate target = parser.getTarget();
+//                
+//        Assert.assertTrue(logician.proveTrue(theory,
+//                target));
+//        
+//        
+//    }
     
     //ok
-    @Ignore
-    @Test
-    public void testOneofParts2() throws PredicateCreateException, IOException, PredicateParseException {
-        parser = new Parser("test_inp/testOneofParts2.txt");
-        parser.parseFile();
-        parser.addRules("Comparison");
-        
-        final Logician logician = parser.getLogician();
-        
-        final Theory theory = parser.getTheory();
-        
-        final Predicate target = parser.getTarget();
-                
-        Assert.assertTrue(logician.proveTrue(theory,
-                target));
-        
-        
-    }
+//    @Ignore
+//    @Test
+//    public void testOneofParts2() throws PredicateCreateException, IOException, PredicateParseException {
+//        parser = new Parser("test_inp/testOneofParts2.txt");
+//        parser.parseFile();
+//        parser.addRules("Comparison");
+//        
+//        final Logician logician = parser.getLogician();
+//        
+//        final Theory theory = parser.getTheory();
+//        
+//        final Predicate target = parser.getTarget();
+//                
+//        Assert.assertTrue(logician.proveTrue(theory,
+//                target));
+//        
+//        
+//    }
 
     
     

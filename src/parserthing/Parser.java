@@ -55,15 +55,30 @@ public  class Parser {
         
         this.filename = filename;
     }
-  
-    public boolean prove () throws IOException {
+
+    public Parser() {
+        this.filename = null;
+    }
+       
+    
+    public boolean prove () throws IOException, PredicateParseException, PredicateCreateException {
         addAllRules();
-        parseFile(filename);
+        parseFile();
         if (isTarget)
             return(logician.proveTrue(theory, target));
         else
             return(logician.proveFalse(theory, target));
     }
+    
+    public boolean prove_win(String text) throws IOException, PredicateParseException, PredicateCreateException {
+        addAllRules();
+        parseText(text);
+        if (isTarget)
+            return(logician.proveTrue(theory, target));
+        else
+            return(logician.proveFalse(theory, target));
+    }
+    
     /**
      * Просмотр файла по строкам и в соответствии с видом каждой строки 
      * принимается решение о принадлежности данных к фактам, правилам или 
@@ -71,56 +86,12 @@ public  class Parser {
      * @param filename - имя просматриваемого файла
      * @throws IOException 
      */
-    public  void parseFile (String filename) throws IOException {
-         
-        String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
-        String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
-        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
-        String regexTargetTrue = "\\?" + regexFact;
-        String regexTargetFalse = "\\?!" + regexFact;
-        
 
-        List<String> list = Files.readAllLines(new File(filename).toPath(), Charset.defaultCharset() );
-        
-        try {
-            for (String line:list) {
-                System.out.println("Parsing line: " + line);
-                line = line.replaceAll(" ", "");
-                if (line.matches(regexFact))
-                    theory.addPredicate(parseFact(line));
-                else if (line.matches(regexTargetTrue)) 
-                {
-                    target = parseTarget(line);
-                    break;
-                }
-                else if (line.matches(regexTargetFalse)) 
-                {
-                    isTarget = false;
-                    target = parseTarget(line);
-                    break;
-                }
-                else if (line.equals("\n"))
-                    ;
-                else    
-                {
-                    System.out.println("something's wrong w/line "
-                            + line);
-                }
-            }
-        }
-        catch (PredicateCreateException | PredicateParseException pce) 
-        {
-            System.out.println(pce.getLocalizedMessage());
-        }
-        args.clear();
-    }
-    
     public  void parseFile () throws IOException, PredicateParseException, PredicateCreateException {
         boolean targetFound = false;
          
         String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
         String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";       //^ - the beginning and $ - the end
-        String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         String regexTargetTrue = "\\?" + regexFact;
         String regexTargetFalse = "\\?!" + regexFact;
         
@@ -206,7 +177,7 @@ public  class Parser {
      * @param name - Comparison, Pointer, ZeroNonzero, Arithmetic expected 
      * @throws java.io.IOException 
      */
-    public void addRules(String name) throws IOException {
+    private void addRules(String name) throws IOException {
         
         System.out.println("!!!ADDING RULES " + name);
         String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
@@ -237,25 +208,13 @@ public  class Parser {
         }        
     }
     
-    public void addAllRules () throws IOException {
+    private void addAllRules () throws IOException {
         this.addRules("Arithmetic");
         this.addRules("Comparison");        
         this.addRules("ZeroNonzero");
 //        this.addRules("Pointer");
     }
-    
-    public Logician getLogician() {
-        return logician;
-    }
-
-    public Predicate getTarget() {
-        return target;
-    }
-
-    public Theory getTheory() {
-        return theory;
-    }
-    
+     
     /**
      * Парсинг строки вида NAME (arg1,arg2,...)
      * @param input входная строка
