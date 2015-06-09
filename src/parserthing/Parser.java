@@ -140,7 +140,6 @@ public  class Parser {
         
         String list[] = text.split("\n");
         
-       
             for (String line:list) {
                 System.out.println("Parsing line: " + line);
                 line = line.replaceAll(" ", "");
@@ -165,6 +164,7 @@ public  class Parser {
                 {
                     System.out.println("something's wrong w/line "
                             + line);
+                    throw new PredicateParseException("Syntax error in line: " + line);
                 }
             }
         
@@ -387,4 +387,3 @@ public  class Parser {
         input = input.replaceAll("\\!", "");
         return parseFact(input);
     }
-}
