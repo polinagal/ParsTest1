@@ -71,7 +71,7 @@ public  class Parser {
     }
     
     public boolean prove_win(String text) throws IOException, PredicateParseException, PredicateCreateException {
-        addAllRules();
+        
         parseText(text);
         if (isTarget)
             return(logician.proveTrue(theory, target));
@@ -85,6 +85,8 @@ public  class Parser {
      * предикату-цели (в начале строки цели стоит ?)
      * @param filename - имя просматриваемого файла
      * @throws IOException 
+     * @throws parserthing.PredicateParseException 
+     * @throws s2a.predicates.api.PredicateCreateException 
      */
 
     public  void parseFile () throws IOException, PredicateParseException, PredicateCreateException {
@@ -177,16 +179,21 @@ public  class Parser {
      * @param name - Comparison, Pointer, ZeroNonzero, Arithmetic expected 
      * @throws java.io.IOException 
      */
-    private void addRules(String name) throws IOException {
+    
+    /**
+     *
+     * @param fname
+     * @throws java.io.IOException
+     */
+    public void addRules(String fname) throws IOException {
         
-        System.out.println("!!!ADDING RULES " + name);
+        System.out.println("!!!ADDING RULES " + fname);
         String regexArg = "((_{0,1}[a-z]+)|(\\-{0,1}[0-9]+)|([A-Z]+))";
         String regexFact = "[A-Z]+(_[A-Z]+)*\\(" + regexArg + "(,"+regexArg +")*\\)";   //^ - the beginning and $ - the end
         String regexRule = regexFact + ":-" + regexFact + "(," + regexFact + ")*";
         
-        String fileWRules = "rules/_" + name + ".txt";
         List<String> list;
-        list = Files.readAllLines(new File(fileWRules).toPath(), Charset.defaultCharset() );
+        list = Files.readAllLines(new File(fname).toPath(), Charset.defaultCharset() );
         
         try {
             for (String line:list) {
@@ -199,6 +206,7 @@ public  class Parser {
                 {
                     System.out.println("The line doesn't match the regex: "
                             + line);
+                    throw new IOException("Wrong line in file " + fname);
                 }
             }
         }
@@ -208,11 +216,11 @@ public  class Parser {
         }        
     }
     
-    private void addAllRules () throws IOException {
-        this.addRules("Arithmetic");
-        this.addRules("Comparison");        
-        this.addRules("ZeroNonzero");
-//        this.addRules("Pointer");
+    public void addAllRules () throws IOException {
+        this.addRules("rules/_Arithmetic.txt");
+        this.addRules("rules/_Comparison.txt");        
+        this.addRules("rules/_ZeroNonzero.txt");
+//        this.addRules("rules/_Pointer.txt");
     }
      
     /**
@@ -387,3 +395,5 @@ public  class Parser {
         input = input.replaceAll("\\!", "");
         return parseFact(input);
     }
+    
+}
