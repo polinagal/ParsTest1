@@ -17,12 +17,12 @@ public class LogicianTheory extends AbstractTheory implements Theory {
             (LogicianFactory)AbstractLogicianFactory.getInstance();
 
     private Logician logician = factory.createLogician(); {
-        try {
-            factory.addAllRules(logician);
-            //factory.addComparisonRules(logician);
-        } catch (PredicateCreateException e) {
-            throw new AssertionError(e);
-        }
+//        try {
+//            //factory.addAllRules(logician);
+//            //factory.addComparisonRules(logician);
+//        } catch (PredicateCreateException e) {
+//            throw new AssertionError(e);
+//        }
     }
 
     protected LogicianTheory() {

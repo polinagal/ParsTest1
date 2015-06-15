@@ -18,7 +18,7 @@ import parserthing.Parser;
 import parserthing.PredicateParseException;
 import s2a.predicates.api.PredicateCreateException;
 
-public class NewJFrame extends javax.swing.JFrame {
+public class InterfaceFrame extends javax.swing.JFrame {
     
     String filename = "";
     
@@ -31,7 +31,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private boolean addMannual = false;
     private List<String> addManNms = new ArrayList<String>() {};
     
-    public NewJFrame() {
+    public InterfaceFrame() {
         initComponents();
     }
 
@@ -46,9 +46,6 @@ public class NewJFrame extends javax.swing.JFrame {
 
         jFileChooser1 = new javax.swing.JFileChooser();
         jOptionPane1 = new javax.swing.JOptionPane();
-        jPopupMenu1 = new javax.swing.JPopupMenu();
-        popupMenu1 = new java.awt.PopupMenu();
-        preferencesPanel = new javax.swing.JPanel();
         jDialog1 = new javax.swing.JDialog();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -76,19 +73,6 @@ public class NewJFrame extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         proveMenuItem = new javax.swing.JMenuItem();
         rulesMenuItem1 = new javax.swing.JMenuItem();
-
-        popupMenu1.setLabel("popupMenu1");
-
-        javax.swing.GroupLayout preferencesPanelLayout = new javax.swing.GroupLayout(preferencesPanel);
-        preferencesPanel.setLayout(preferencesPanelLayout);
-        preferencesPanelLayout.setHorizontalGroup(
-            preferencesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 237, Short.MAX_VALUE)
-        );
-        preferencesPanelLayout.setVerticalGroup(
-            preferencesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
-        );
 
         jDialog1.setTitle("Preferences");
         jDialog1.setMinimumSize(new java.awt.Dimension(370, 287));
@@ -191,7 +175,7 @@ public class NewJFrame extends javax.swing.JFrame {
                 .addGroup(jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addMan)
                     .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                 .addComponent(SavePrefsBtn)
                 .addContainerGap())
         );
@@ -417,7 +401,6 @@ public class NewJFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_rulesMenuItem1ActionPerformed
 
     private void jMenu2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu2ActionPerformed
-        preferencesPanel.setVisible(true);// TODO add your handling code here:
     }//GEN-LAST:event_jMenu2ActionPerformed
 
     private void addallCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addallCheckBox1ActionPerformed
@@ -452,6 +435,7 @@ public class NewJFrame extends javax.swing.JFrame {
             filename = file.getAbsolutePath();
             if (!addManNms.contains(filename))
             addManNms.add(filename);
+            addMannual = true;
         }
     }//GEN-LAST:event_addManActionPerformed
 
@@ -459,7 +443,7 @@ public class NewJFrame extends javax.swing.JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(InterfaceFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         
@@ -467,7 +451,7 @@ public class NewJFrame extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new NewJFrame().setVisible(true);
+                new InterfaceFrame().setVisible(true);
             }
         });
     }
@@ -496,11 +480,8 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JOptionPane jOptionPane1;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton loadButton;
-    private java.awt.PopupMenu popupMenu1;
-    private javax.swing.JPanel preferencesPanel;
     private javax.swing.JButton proveButton;
     private javax.swing.JMenuItem proveMenuItem;
     private javax.swing.JMenuItem rulesMenuItem1;

@@ -95,7 +95,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testVerySimple() throws PredicateCreateException, IOException {
+    public void testVerySimple() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testVerySimple.txt");
                 
         Assert.assertTrue(parser.prove());
@@ -104,7 +104,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testNegateVerySimple() throws PredicateCreateException, IOException {
+    public void testNegateVerySimple() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testNegativeVerySimple.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -112,7 +112,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testLessToLessEquals() throws PredicateCreateException, IOException {
+    public void testLessToLessEquals() throws PredicateCreateException, IOException, PredicateParseException {
         
         parser = new Parser("test_inp/testLessToLessEquals.txt");
         Assert.assertTrue(parser.prove());
@@ -121,7 +121,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testZeroDefinition() throws PredicateCreateException, IOException {
+    public void testZeroDefinition() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testZeroDefinition.txt");
         Assert.assertTrue(parser.prove());
         
@@ -130,7 +130,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testZeroNegate() throws PredicateCreateException, IOException {
+    public void testZeroNegate() throws PredicateCreateException, IOException , PredicateParseException {
         
         parser = new Parser("test_inp/testZeroNegate.txt");
         Assert.assertTrue(parser.prove());
@@ -140,7 +140,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testNonZeroDefinition() throws PredicateCreateException, IOException {
+    public void testNonZeroDefinition() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testNonZeroDefinition.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -148,7 +148,7 @@ public class PrologLogicianTest_EXT {
     //problemo
     @Ignore
     @Test
-    public void testNonZeroNegate() throws PredicateCreateException, IOException {
+    public void testNonZeroNegate() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testNonZeroNegate.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -156,7 +156,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore 
     @Test
-    public void testNonZeroChain() throws PredicateCreateException, IOException {
+    public void testNonZeroChain() throws PredicateCreateException, IOException, PredicateParseException  {
         
         parser = new Parser("test_inp/testNonZeroChain.txt");
         Assert.assertTrue(parser.prove());
@@ -165,7 +165,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testNotNonZero() throws PredicateCreateException, IOException {
+    public void testNotNonZero() throws PredicateCreateException, IOException, PredicateParseException  {
         
         parser = new Parser("test_inp/testNotNonZero.txt");
         Assert.assertTrue(parser.prove());
@@ -174,7 +174,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testOrFalse1() throws PredicateCreateException, IOException {
+    public void testOrFalse1() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testOrFalse1.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -182,7 +182,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testOrFalse2() throws PredicateCreateException, IOException {
+    public void testOrFalse2() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testOrFalse2.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -190,7 +190,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testOrTrue1() throws PredicateCreateException, IOException {
+    public void testOrTrue1() throws PredicateCreateException, IOException, PredicateParseException  {
          parser = new Parser("test_inp/testOrTrue1.txt");
         Assert.assertFalse(parser.prove());
     }
@@ -198,7 +198,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testOrTrue2() throws PredicateCreateException, IOException {
+    public void testOrTrue2() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testOrTrue2.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -206,7 +206,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAndTrue1() throws PredicateCreateException, IOException {
+    public void testAndTrue1() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testAndTrue1.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -214,7 +214,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAndTrue2() throws PredicateCreateException, IOException {
+    public void testAndTrue2() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testAndTrue2.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -222,7 +222,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testCommutativity() throws PredicateCreateException, IOException {
+    public void testCommutativity() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testCommutativity.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -230,7 +230,7 @@ public class PrologLogicianTest_EXT {
     //ok
 //    @Ignore
     @Test
-    public void testCommutativityNegate() throws PredicateCreateException, IOException {
+    public void testCommutativityNegate() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testCommutativityNegate.txt");
         Assert.assertFalse(parser.prove());
         
@@ -239,7 +239,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativity() throws PredicateCreateException, IOException {
+    public void testAssociativity() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testAssociativity.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -247,7 +247,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativityNegate() throws PredicateCreateException, IOException {
+    public void testAssociativityNegate() throws PredicateCreateException, IOException, PredicateParseException  {
         
         parser = new Parser("test_inp/testAssociativityNegate.txt");
         Assert.assertFalse(parser.prove());
@@ -257,7 +257,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativityExtra() throws PredicateCreateException, IOException {
+    public void testAssociativityExtra() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testAssociativityExtra.txt");
         Assert.assertTrue(parser.prove());
         
@@ -266,7 +266,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativityChain() throws PredicateCreateException, IOException {
+    public void testAssociativityChain() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testAssociativityChain.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -274,7 +274,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testCommAndAssoc() throws PredicateCreateException, IOException {
+    public void testCommAndAssoc() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testCommAndAssoc.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -282,7 +282,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativityNumbers() throws PredicateCreateException, IOException {
+    public void testAssociativityNumbers() throws PredicateCreateException, IOException , PredicateParseException {
         
         parser = new Parser("test_inp/testAssociativityNumbers.txt");
         Assert.assertTrue(parser.prove());       
@@ -291,7 +291,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testAssociativityChainNumbers() throws PredicateCreateException, IOException {
+    public void testAssociativityChainNumbers() throws PredicateCreateException, IOException, PredicateParseException  {
         
         parser = new Parser("test_inp/testAssociativityChainNumbers.txt");
        Assert.assertTrue(parser.prove()); 
@@ -300,7 +300,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testVariableShortComparisons() throws PredicateCreateException, IOException {
+    public void testVariableShortComparisons() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testVariableShortComparisons.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -308,7 +308,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testVariableReverseComparisons() throws PredicateCreateException, IOException {
+    public void testVariableReverseComparisons() throws PredicateCreateException, IOException , PredicateParseException {
         // y<=w <== y<=z, z<=w (!) <= y=z
         parser = new Parser("test_inp/testVariableReverseComparisons.txt");
         Assert.assertTrue(parser.prove());
@@ -318,7 +318,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testVariableChainComparisons() throws PredicateCreateException, IOException {
+    public void testVariableChainComparisons() throws PredicateCreateException, IOException, PredicateParseException  {
         // x<w <== x<y (!), y<=w <== y<=z, z<=w (!) <= y=z
         parser = new Parser("test_inp/testVariableChainComparisons.txt");
         Assert.assertTrue(parser.prove());
@@ -328,7 +328,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testNumberShortComparisons() throws PredicateCreateException, IOException {
+    public void testNumberShortComparisons() throws PredicateCreateException, IOException, PredicateParseException {
         // y<=7 <== y<=EX, (EX<=7)
         // y<=EX <= y=EX
         // y<=7 <== y<=4 (?), 4<=7 (!) <= y=4
@@ -339,7 +339,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore 
     @Test
-    public void testNumberShortComparisonsNegate() throws PredicateCreateException, IOException {
+    public void testNumberShortComparisonsNegate() throws PredicateCreateException, IOException, PredicateParseException  {
         // I should think more about numbers here
         // y<=7 <== y<=EX, (EX<=7)
         // y<=EX <= y=EX
@@ -352,7 +352,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore 
     @Test
-    public void testNumberChainComparisons() throws PredicateCreateException, IOException {
+    public void testNumberChainComparisons() throws PredicateCreateException, IOException , PredicateParseException {
         
         parser = new Parser("test_inp/testNumberChainComparisons.txt");
         Assert.assertTrue(parser.prove());
@@ -362,7 +362,7 @@ public class PrologLogicianTest_EXT {
     //ok
 //    @Ignore 
     @Test
-    public void testNumberChainComparisonsNegate() throws PredicateCreateException, IOException {
+    public void testNumberChainComparisonsNegate() throws PredicateCreateException, IOException , PredicateParseException {
         //         x<7 <== x<y (!), y<=7 <= y<=4 (?), 4<=7 (!) <= y=4
         parser = new Parser("test_inp/testNumberChainComparisonsNegate.txt");
         Assert.assertTrue(parser.prove());
@@ -371,7 +371,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testLessAndGreater() throws PredicateCreateException, IOException {
+    public void testLessAndGreater() throws PredicateCreateException, IOException, PredicateParseException  {
         parser = new Parser("test_inp/testLessAndGreater.txt");
         Assert.assertTrue(parser.prove());
     }
@@ -379,7 +379,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testLessAndNotEquals() throws PredicateCreateException, IOException {
+    public void testLessAndNotEquals() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testLessAndNotEquals.txt");
         Assert.assertTrue(parser.prove());
         
@@ -388,7 +388,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testNegEquals() throws PredicateCreateException, IOException {
+    public void testNegEquals() throws PredicateCreateException, IOException , PredicateParseException {
         parser = new Parser("test_inp/testNegEquals.txt");
         Assert.assertTrue(parser.prove());
         
@@ -397,7 +397,7 @@ public class PrologLogicianTest_EXT {
     //ok
     @Ignore
     @Test
-    public void testDoubleMinus() throws PredicateCreateException , IOException{
+    public void testDoubleMinus() throws PredicateCreateException , IOException, PredicateParseException {
         parser = new Parser("test_inp/testDoubleMinus.txt");
         Assert.assertTrue(parser.prove());
     }
